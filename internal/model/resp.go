@@ -16,3 +16,10 @@ type NewsResp struct {
 	CoverSource string    `json:"coverSource"`
 	PubDate     time.Time `json:"pubDate"`
 }
+
+type VideoResp struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Link        string `json:"link"`
+	Cover       string `json:"cover"`
+}

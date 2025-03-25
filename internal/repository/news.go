@@ -8,6 +8,8 @@ import (
 	"xorm.io/xorm"
 )
 
+// QueryNewsByPage
+// 分頁取得新聞列表
 func (repo *Repository) QueryNewsByPage(limit, start int) ([]model.News, error) {
 	cols := []string{"title", "description", "cover", "cover_source", "link", "pub_date"}
 	sess := repo.queryNews(cols)
@@ -15,7 +17,7 @@ func (repo *Repository) QueryNewsByPage(limit, start int) ([]model.News, error) 
 	var news = make([]model.News, 0)
 	err := sess.Limit(limit, start).Find(&news)
 	if err != nil {
-		log.Error("repository::QueryActorsByPage", zap.Error(err))
+		log.Error("repository::QueryNewsByPage", zap.Error(err))
 		return nil, err
 	}
 
@@ -28,7 +30,7 @@ func (repo *Repository) QueryNewsCount() (int64, error) {
 	var actor = model.News{}
 	count, err := sess.Count(actor)
 	if err != nil {
-		log.Error("repository::QueryActorsCount", zap.Error(err))
+		log.Error("repository::QueryNewsCount", zap.Error(err))
 		return 0, err
 	}
 

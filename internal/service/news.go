@@ -2,6 +2,8 @@ package service
 
 import "sportNews/internal/model"
 
+// QueryNews
+// 新聞列表
 func (s *Serv) QueryNews(page, size int) (interface{}, error) {
 	start := (page - 1) * size
 	news, err := s.Repo.QueryNewsByPage(size, start)
@@ -16,6 +18,7 @@ func (s *Serv) QueryNews(page, size int) (interface{}, error) {
 			Description: v.Description,
 			Cover:       v.Cover,
 			CoverSource: v.CoverSource,
+			Link:        v.Link,
 			PubDate:     v.PubDate,
 		})
 	}

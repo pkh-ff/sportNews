@@ -14,6 +14,7 @@ func (app App) router(e *gin.Engine) {
 
 	e.GET("/healthz", httpError.ErrHandler(app.healthHandler))
 	e.GET("/news", httpError.ErrHandler(app.news))
+	e.GET("/video", httpError.ErrHandler(app.video))
 }
 
 func (app App) healthHandler(c *gin.Context) error {
@@ -24,6 +25,7 @@ func (app App) healthHandler(c *gin.Context) error {
 	return nil
 }
 
+// 分頁方式取得新聞列表
 func (app App) news(c *gin.Context) error {
 	pageStr := c.DefaultQuery("page", "1")
 	page, err := strconv.Atoi(pageStr)
@@ -43,6 +45,18 @@ func (app App) news(c *gin.Context) error {
 	}
 
 	c.JSON(http.StatusOK, news)
+
+	return nil
+}
+
+// 取得影片列表
+func (app App) video(c *gin.Context) error {
+	videos, err := app.Serv.GetVideoList()
+	if err != nil {
+		return httpError.ErrNoRows
+	}
+
+	c.JSON(http.StatusOK, videos)
 
 	return nil
 }
