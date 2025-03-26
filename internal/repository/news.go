@@ -11,13 +11,14 @@ import (
 // QueryNewsByPage
 // 分頁取得新聞列表
 func (repo *Repository) QueryNewsByPage(limit, start int) ([]model.News, error) {
+	log.Infof("repository.QueryNewsByPage(), limit:%v, start:%v\n", limit, start)
 	cols := []string{"title", "description", "cover", "cover_source", "link", "pub_date"}
 	sess := repo.queryNews(cols)
 
 	var news = make([]model.News, 0)
 	err := sess.Limit(limit, start).Find(&news)
 	if err != nil {
-		log.Error("repository::QueryNewsByPage", zap.Error(err))
+		log.Error("repository.QueryNewsByPage()", zap.Error(err))
 		return nil, err
 	}
 
@@ -25,12 +26,13 @@ func (repo *Repository) QueryNewsByPage(limit, start int) ([]model.News, error) 
 }
 
 func (repo *Repository) QueryNewsCount() (int64, error) {
+	log.Infof("repository.QueryNewsCount()\n")
 	sess := repo.queryNews([]string{"id"})
 
 	var actor = model.News{}
 	count, err := sess.Count(actor)
 	if err != nil {
-		log.Error("repository::QueryNewsCount", zap.Error(err))
+		log.Error("repository.QueryNewsCount()", zap.Error(err))
 		return 0, err
 	}
 

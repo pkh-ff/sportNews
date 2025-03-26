@@ -17,7 +17,7 @@ func (repo *Repository) VideoList(limit int) ([]model.Video, error) {
 	var videos = make([]model.Video, 0)
 	err := sess.Limit(limit).Find(&videos)
 	if err != nil {
-		log.Error("repository::VideoList", zap.Error(err))
+		log.Error("repository::VideoList()", zap.Error(err))
 		return nil, err
 	}
 
