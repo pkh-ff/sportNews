@@ -32,7 +32,7 @@ func main() {
 	if err != nil {
 		log.Error("setting conf", zap.Error(err))
 	}
-	log.Infof("setting conf", "conf:%v\n", config)
+	log.Infof("setting conf", "conf:%v", config)
 	log.Info("app info", zap.String("Project", config.Project))
 
 	// setting database
@@ -53,12 +53,12 @@ func shutdown(project string, db *xorm.EngineGroup) {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
 	s := <-quit
-	log.Debugf("service shutdown", "get a signal %s. %s Server is shutdowning ...\n", s.String(), project)
+	log.Debugf("service shutdown", "get a signal %s. %s Server is shutdowning ...", s.String(), project)
 
 	_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	db.Close()
 
-	log.Debugf("service shutdown", "%s Server is exit\n", project)
+	log.Debugf("service shutdown", "%s Server is exit", project)
 }

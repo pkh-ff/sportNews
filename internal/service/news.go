@@ -12,10 +12,10 @@ func (s *Serv) QueryNews(page, size int) (interface{}, error) {
 	start := (page - 1) * size
 	news, err := s.Repo.QueryNewsByPage(size, start)
 	if err != nil {
-		log.Errorf("service.QueryNews(), get news error: %v\n", err)
+		log.Errorf("service.QueryNews(), get news error: %v", err)
 		return nil, err
 	}
-	log.Infof("service.QueryNews(), news:%v\n", news)
+	log.Infof("service.QueryNews(), news:%v", news)
 
 	data := make([]model.NewsResp, 0)
 	for _, v := range news {
@@ -28,11 +28,11 @@ func (s *Serv) QueryNews(page, size int) (interface{}, error) {
 			PubDate:     v.PubDate,
 		})
 	}
-	log.Infof("service.QueryNews(), data:%v\n", data)
+	log.Infof("service.QueryNews(), data:%v", data)
 
 	count, err := s.Repo.QueryNewsCount()
 	if err != nil {
-		log.Errorf("service.QueryNews(), get news data count error: %v\n", err)
+		log.Errorf("service.QueryNews(), get news data count error: %v", err)
 		return nil, err
 	}
 
@@ -40,7 +40,7 @@ func (s *Serv) QueryNews(page, size int) (interface{}, error) {
 	if int(count)%size > 0 {
 		pn = pn + 1
 	}
-	log.Infof("service.QueryNews(), TotalCount:%v, TotalPage:%v\n", count, pn)
+	log.Infof("service.QueryNews(), TotalCount:%v, TotalPage:%v", count, pn)
 
 	return model.NewsPageResp{
 		Records:    data,

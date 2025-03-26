@@ -11,10 +11,10 @@ func (s *Serv) GetVideoList() (interface{}, error) {
 	log.Info("service.GetVideoList()")
 	videos, err := s.Repo.VideoList(10)
 	if err != nil {
-		log.Errorf("service.GetVideoList(), get data error: %v\n", err)
+		log.Errorf("service.GetVideoList(), get data error: %v", err)
 		return nil, err
 	}
-	log.Infof("service.GetVideoList(), videos:%v\n", videos)
+	log.Infof("service.GetVideoList(), videos:%v", videos)
 
 	data := make([]model.VideoResp, 0)
 	for _, v := range videos {
@@ -25,7 +25,7 @@ func (s *Serv) GetVideoList() (interface{}, error) {
 			Link:        v.Link,
 		})
 	}
-	log.Infof("service.GetVideoList(), data:%v\n", data)
+	log.Infof("service.GetVideoList(), data:%v", data)
 
 	return data, nil
 }

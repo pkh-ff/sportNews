@@ -15,7 +15,7 @@ func (repo *Repository) VideoList(limit int) ([]model.Video, error) {
 	sess.Where("status = ?", enum.Enable)
 
 	var videos = make([]model.Video, 0)
-	err := sess.Limit(limit).Find(&videos)
+	err := sess.OrderBy("id DESC").Limit(limit).Find(&videos)
 	if err != nil {
 		log.Error("repository::VideoList()", zap.Error(err))
 		return nil, err

@@ -66,12 +66,12 @@ func (app App) video(c *gin.Context) error {
 // 賽事排行榜
 func (app App) rank(c *gin.Context) error {
 	t := c.Param("type")
-
-	if !enum.IsRankTypeExist(enum.RankType(t)) {
+	rankType := enum.RankType(t)
+	if !enum.IsRankTypeExist(rankType) {
 		return response.ErrParameter
 	}
 
-	rank, err := app.Serv.GetRankData(t)
+	rank, err := app.Serv.GetRankData(rankType)
 	if err != nil {
 		return response.ErrNoRows
 	}
