@@ -10,8 +10,8 @@ func TestAppConfNew(t *testing.T) {
 	conf, err := New("app.conf.example.yaml")
 
 	c := &Conf{
-		Project: "sport-news",
 		App: App{
+			Name:         "api-server",
 			Addr:         "9011",
 			Mode:         "debug",
 			ReadTimeout:  "10s",

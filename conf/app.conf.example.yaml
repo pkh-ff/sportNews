@@ -1,6 +1,5 @@
-project: sport-news
-
 app:
+  name: api-server
   addr: 9011
   mode: debug
   read_timeout: 10s

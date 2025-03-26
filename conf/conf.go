@@ -7,13 +7,13 @@ import (
 )
 
 type Conf struct {
-	Project string          `mapstructure:"project"`
-	App     App             `mapstructure:"app"`
-	DB      database.Config `mapstructure:"db"`
-	Assets  string          `mapstructure:"assets"`
+	App    App             `mapstructure:"app"`
+	DB     database.Config `mapstructure:"db"`
+	Assets string          `mapstructure:"assets"`
 }
 
 type App struct {
+	Name         string `mapstructure:"name"`
 	Addr         string `mapstructure:"addr"`
 	Mode         string `mapstructure:"mode"`
 	ReadTimeout  string `mapstructure:"read_timeout"`
