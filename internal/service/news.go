@@ -42,8 +42,8 @@ func (s *Serv) QueryNews(page, size int) (interface{}, error) {
 	}
 	log.Infof("service.QueryNews(), TotalCount:%v, TotalPage:%v\n", count, pn)
 
-	return model.BaseResp{
-		Data:       data,
+	return model.NewsPageResp{
+		Records:    data,
 		TotalCount: count,
 		TotalPage:  pn,
 	}, nil

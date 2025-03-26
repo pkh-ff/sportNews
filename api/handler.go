@@ -3,19 +3,20 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sportNews/internal/httpError"
+	"sportNews/internal/enum"
+	"sportNews/internal/response"
 	"strconv"
 )
 
 func (app App) router(e *gin.Engine) {
 	e.HandleMethodNotAllowed = true
-	e.NoMethod(httpError.HandleNoAllowMethod)
-	e.NoRoute(httpError.HandleNotFound)
+	e.NoMethod(response.HandleNoAllowMethod)
+	e.NoRoute(response.HandleNotFound)
 
-	e.GET("/healthz", httpError.ErrHandler(app.healthHandler))
-	e.GET("/news", httpError.ErrHandler(app.news))
-	e.GET("/video", httpError.ErrHandler(app.video))
-	e.GET("/rank/:type", httpError.ErrHandler(app.rank))
+	e.GET("/healthz", response.ErrHandler(app.healthHandler))
+	e.GET("/news", response.ErrHandler(app.news))
+	e.GET("/video", response.ErrHandler(app.video))
+	e.GET("/rank/:type", response.ErrHandler(app.rank))
 }
 
 func (app App) healthHandler(c *gin.Context) error {
@@ -42,10 +43,10 @@ func (app App) news(c *gin.Context) error {
 
 	news, err := app.Serv.QueryNews(page, size)
 	if err != nil {
-		return httpError.ErrNoRows
+		return response.ErrNoRows
 	}
 
-	c.JSON(http.StatusOK, news)
+	c.JSON(http.StatusOK, response.Success(news))
 
 	return nil
 }
@@ -54,10 +55,10 @@ func (app App) news(c *gin.Context) error {
 func (app App) video(c *gin.Context) error {
 	videos, err := app.Serv.GetVideoList()
 	if err != nil {
-		return httpError.ErrNoRows
+		return response.ErrNoRows
 	}
 
-	c.JSON(http.StatusOK, videos)
+	c.JSON(http.StatusOK, response.Success(videos))
 
 	return nil
 }
@@ -65,11 +66,16 @@ func (app App) video(c *gin.Context) error {
 // 賽事排行榜
 func (app App) rank(c *gin.Context) error {
 	t := c.Param("type")
-	rank, err := app.Serv.GetRankData(t)
-	if err != nil {
-		return httpError.ErrNoRows
+
+	if !enum.IsRankTypeExist(enum.RankType(t)) {
+		return response.ErrParameter
 	}
 
-	c.JSON(http.StatusOK, rank)
+	rank, err := app.Serv.GetRankData(t)
+	if err != nil {
+		return response.ErrNoRows
+	}
+
+	c.JSON(http.StatusOK, response.Success(rank))
 	return nil
 }

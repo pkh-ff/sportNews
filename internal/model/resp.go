@@ -2,10 +2,10 @@ package model
 
 import "time"
 
-type BaseResp struct {
-	Data       interface{} `json:"data"`
-	TotalCount int64       `json:"totalCount"`
-	TotalPage  int         `json:"totalPage"`
+type NewsPageResp struct {
+	Records    []NewsResp `json:"records"`
+	TotalCount int64      `json:"totalCount"`
+	TotalPage  int        `json:"totalPage"`
 }
 
 type NewsResp struct {

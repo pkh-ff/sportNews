@@ -2,13 +2,14 @@ package service
 
 import (
 	"encoding/json"
+	"sportNews/internal/enum"
 	"sportNews/internal/log"
 	"sportNews/internal/model"
 )
 
 // GetRankData
 // 取得指定類型排行榜資料
-func (s *Serv) GetRankData(t string) (interface{}, error) {
+func (s *Serv) GetRankData(t enum.RankType) (interface{}, error) {
 	log.Infof("service.GetRankData()\n")
 	data, err := s.Repo.GetRankDate(t)
 	if err != nil {

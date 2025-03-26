@@ -13,6 +13,10 @@ type SportRank struct {
 	CreateAt    time.Time `xorm:"create_at"`
 }
 
+func (SportRank) TableName() string {
+	return "sport_rank"
+}
+
 type RankDetail struct {
 	Team     string `json:"team"`
 	Position int    `json:"position"`
@@ -20,8 +24,4 @@ type RankDetail struct {
 	Points   int    `json:"points"`
 	Rating   int    `json:"rating"`
 	Icon     string `json:"icon"`
-}
-
-func (SportRank) TableName() string {
-	return "sport_rank"
 }

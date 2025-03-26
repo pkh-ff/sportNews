@@ -2,11 +2,14 @@ package repository
 
 import (
 	"go.uber.org/zap"
+	"sportNews/internal/enum"
 	"sportNews/internal/log"
 	"sportNews/internal/model"
 )
 
-func (repo *Repository) GetRankDate(t string) (model.SportRank, error) {
+// GetRankDate
+// 取得指定類型最新排行榜資料
+func (repo *Repository) GetRankDate(t enum.RankType) (model.SportRank, error) {
 	log.Infof("repository.GetRankDate()\n")
 	cols := []string{"data"}
 	sess := repo.db.Cols(cols...)
