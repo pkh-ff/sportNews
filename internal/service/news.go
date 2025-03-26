@@ -1,6 +1,7 @@
 package service
 
 import (
+	"sportNews/internal/assets"
 	"sportNews/internal/log"
 	"sportNews/internal/model"
 )
@@ -22,7 +23,7 @@ func (s *Serv) QueryNews(page, size int) (interface{}, error) {
 		data = append(data, model.NewsResp{
 			Title:       v.Title,
 			Description: v.Description,
-			Cover:       v.Cover,
+			Cover:       assets.FullPath(v.Cover),
 			CoverSource: v.CoverSource,
 			Link:        v.Link,
 			PubDate:     v.PubDate,
