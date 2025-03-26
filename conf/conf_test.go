@@ -6,11 +6,11 @@ import (
 	"testing"
 )
 
-func TestNew(t *testing.T) {
+func TestAppConfNew(t *testing.T) {
 	conf, err := New("app.conf.example.yaml")
 
 	c := &Conf{
-		Project: "kingler",
+		Project: "sport-news",
 		App: App{
 			Addr:         "9011",
 			Mode:         "debug",
