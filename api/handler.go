@@ -15,6 +15,7 @@ func (app App) router(e *gin.Engine) {
 
 	e.GET("/healthz", response.ErrHandler(app.healthHandler))
 	e.GET("/news", response.ErrHandler(app.news))
+	e.GET("/news/:id", response.ErrHandler(app.newsDetail))
 	e.GET("/video", response.ErrHandler(app.video))
 	e.GET("/rank/:type", response.ErrHandler(app.rank))
 }
@@ -48,6 +49,22 @@ func (app App) news(c *gin.Context) error {
 
 	c.JSON(http.StatusOK, response.Success(news))
 
+	return nil
+}
+
+// 新聞詳情
+func (app App) newsDetail(c *gin.Context) error {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return response.ErrParameter
+	}
+	data, err := app.Serv.FindNews(id)
+	if err != nil {
+		return response.ErrNoRows
+	}
+
+	c.JSON(http.StatusOK, response.Success(data))
 	return nil
 }
 

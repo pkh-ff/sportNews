@@ -2,7 +2,7 @@ package service
 
 import (
 	"sportNews/internal/log"
-	"sportNews/internal/model"
+	"sportNews/internal/model/api"
 )
 
 // GetVideoList
@@ -16,9 +16,9 @@ func (s *Serv) GetVideoList() (interface{}, error) {
 	}
 	log.Infof("service.GetVideoList(), videos:%v", videos)
 
-	data := make([]model.VideoResp, 0)
+	data := make([]api.VideoResp, 0)
 	for _, v := range videos {
-		data = append(data, model.VideoResp{
+		data = append(data, api.VideoResp{
 			Title:       v.Title,
 			Description: v.Description,
 			Cover:       v.Cover,

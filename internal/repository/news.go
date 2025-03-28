@@ -12,7 +12,7 @@ import (
 // 分頁取得新聞列表
 func (repo *Repository) QueryNewsByPage(limit, start int) ([]model.News, error) {
 	log.Infof("repository.QueryNewsByPage(), limit:%v, start:%v", limit, start)
-	cols := []string{"title", "description", "cover", "cover_source", "link", "pub_date"}
+	cols := []string{"id", "title", "description", "cover", "cover_source", "pub_date"}
 	sess := repo.queryNews(cols)
 
 	var news = make([]model.News, 0)
@@ -37,6 +37,24 @@ func (repo *Repository) QueryNewsCount() (int64, error) {
 	}
 
 	return count, nil
+}
+
+// FindNews
+// 取得新聞詳情
+func (repo *Repository) FindNews(id int) (model.News, error) {
+	log.Infof("repository.FindNews()")
+	cols := []string{"title", "description", "cover", "cover_source", "content", "pub_date"}
+	sess := repo.db.Cols(cols...)
+	sess.Where("id = ?", id).And("status = ?", enum.Enable)
+
+	var data model.News
+	_, err := sess.Limit(1).Get(&data)
+	if err != nil {
+		log.Error("repository.GetRankDate()", zap.Error(err))
+		return data, err
+	}
+
+	return data, nil
 }
 
 func (repo *Repository) InsertNews(m model.News) error {
