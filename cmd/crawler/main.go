@@ -52,7 +52,7 @@ func crawlerProcess(ctx context.Context, db *xorm.EngineGroup) {
 	wgCount += 1
 	go func() {
 		defer wg.Done()
-		process.EspncricinfoProcess(ctx, db)
+		process.NDTVProcess(ctx, db)
 	}()
 }
 
