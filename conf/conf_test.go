@@ -6,6 +6,7 @@ import (
 	"testing"
 )
 
+// 測試 api-server APP config是否符合格式
 func TestAppConfNew(t *testing.T) {
 	conf, err := New("app.conf.example.yaml")
 
@@ -19,6 +20,22 @@ func TestAppConfNew(t *testing.T) {
 		},
 		DB:     newDBConf("kingler"),
 		Assets: "http://assets.localhost",
+	}
+
+	assert.Nil(t, err)
+	assert.Equal(t, c, conf)
+}
+
+// 測試 crawler-process APP config是否符合格式
+func TestProcessConfNew(t *testing.T) {
+	conf, err := New("process.conf.example.yaml")
+
+	c := &Conf{
+		App: App{
+			Name: "crawler-process",
+		},
+		DB:     newDBConf("kingler"),
+		Assets: "",
 	}
 
 	assert.Nil(t, err)

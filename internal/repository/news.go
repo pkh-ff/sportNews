@@ -29,10 +29,35 @@ func (repo *Repository) QueryNewsCount() (int64, error) {
 	log.Infof("repository.QueryNewsCount()")
 	sess := repo.queryNews([]string{"id"})
 
-	var actor = model.News{}
-	count, err := sess.Count(actor)
+	var news = model.News{}
+	count, err := sess.Count(news)
 	if err != nil {
 		log.Error("repository.QueryNewsCount()", zap.Error(err))
+		return 0, err
+	}
+
+	return count, nil
+}
+
+func (repo *Repository) InsertNews(m model.News) error {
+	log.Infof("repository.InsertNews()")
+	_, err := repo.db.Insert(m)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repo *Repository) GetCountByTitle(title, source string) (int64, error) {
+	log.Infof("repository.GetCountByTitle()")
+	var news = model.News{}
+
+	sess := repo.db.Cols([]string{"id"}...)
+	sess.Where("title = ?", title).And("source = ?", source)
+	count, err := sess.Count(news)
+	if err != nil {
+		log.Error("repository.GetCountByTitle()", zap.Error(err))
 		return 0, err
 	}
 
