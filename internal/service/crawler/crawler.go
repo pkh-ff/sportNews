@@ -1,17 +1,53 @@
 package crawler
 
 import (
+	"fmt"
 	"sportNews/internal/enum"
 	"sportNews/internal/log"
 	"sportNews/internal/model"
 	"sportNews/internal/model/crawler"
 	"sportNews/internal/repository"
+	"time"
 	"xorm.io/xorm"
 )
 
 type Serv struct {
 	Repo   *repository.Repository
 	Source string
+}
+
+// CrawlerNewsTemplate
+// 新聞爬蟲模板
+func (s *Serv) CrawlerNewsTemplate(c NewsCrawler) {
+	fmt.Println("====== Crawler Start ======")
+	list, err := c.List(0)
+	if err != nil {
+		//log.Println("List() error:", err)
+		return
+	}
+
+	data := make([]crawler.News, 0)
+	for _, v := range list {
+		// 檢查新聞是否已存在
+		count, err := s.Repo.GetCountByTitle(v.Title, s.Source)
+		if err != nil {
+			continue
+		}
+		if count > 0 {
+			continue
+		}
+
+		time.Sleep(5 * time.Second) // 避免頻率過快
+		content, err := c.Detail(v.Link)
+		if err != nil {
+			continue
+		}
+		v.Content = content
+		data = append(data, v)
+	}
+
+	s.storeToDB(data)
+	fmt.Println("====== Crawler End ======")
 }
 
 func New(db *xorm.EngineGroup, source string) *Serv {

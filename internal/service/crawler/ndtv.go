@@ -1,15 +1,12 @@
 package crawler
 
 import (
-	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"net/http"
 	"sportNews/internal/helper"
-	"sportNews/internal/log"
 	crawlerModel "sportNews/internal/model/crawler"
 	"sportNews/internal/repository"
 	"strings"
-	"time"
 	"xorm.io/xorm"
 )
 
@@ -32,37 +29,7 @@ func NewMDTVServ(db *xorm.EngineGroup) *NDTVServ {
 }
 
 func (s *NDTVServ) Crawler() {
-	fmt.Println("====== Crawler Start ======")
-	list, err := s.List(0)
-	data := make([]crawlerModel.News, 0)
-	if err != nil {
-		// TODO ERROR
-	} else {
-		for _, v := range list {
-			//先用title與source去DB檢查該新聞是否存在
-			count, err := s.Serv.Repo.GetCountByTitle(v.Title, s.Source)
-			if err != nil {
-				// TODO
-				log.Errorf("storeToDB(), query count error:", err)
-			}
-
-			// 如果存在不處理該篇新聞
-			if count > 0 {
-				continue
-			}
-
-			time.Sleep(5 * time.Second)
-			content, err := s.Detail(v.Link)
-			if err != nil {
-				continue // 或者 continue
-			}
-			v.Content = content
-			data = append(data, v)
-		}
-	}
-
-	s.Serv.storeToDB(data)
-	fmt.Println("====== Crawler End ======")
+	s.Serv.CrawlerNewsTemplate(s)
 }
 
 func (s *NDTVServ) List(page int) ([]crawlerModel.News, error) {
