@@ -36,7 +36,7 @@ func main() {
 	log.Info("app info", zap.String("Project", config.App.Name))
 
 	// setting database
-	db, err := database.New(config.DB)
+	db, err := database.New(config.App.Mode, config.DB)
 	if err != nil {
 		log.Error("init database", zap.Error(err))
 	}
