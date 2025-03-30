@@ -22,7 +22,6 @@ func (s *Serv) CrawlerNewsTemplate(c NewsCrawler) {
 	fmt.Println("====== Crawler Start ======")
 	list, err := c.List(0)
 	if err != nil {
-		//log.Println("List() error:", err)
 		return
 	}
 
@@ -50,19 +49,13 @@ func (s *Serv) CrawlerNewsTemplate(c NewsCrawler) {
 	fmt.Println("====== Crawler End ======")
 }
 
-func New(db *xorm.EngineGroup, source string) *Serv {
+func newServ(db *xorm.EngineGroup, source string) *Serv {
 	repo := repository.New(db)
 
 	return &Serv{
 		Repo:   &repo,
 		Source: source,
 	}
-}
-
-type NewsCrawler interface {
-	Crawler()
-	List(page int) ([]crawler.News, error)
-	Detail(url string) (string, error)
 }
 
 // story to db
@@ -83,4 +76,10 @@ func (s *Serv) storeToDB(data []crawler.News) {
 			log.Errorf("storeToDB(), query count error:", err)
 		}
 	}
+}
+
+type NewsCrawler interface {
+	Crawler()
+	List(page int) ([]crawler.News, error)
+	Detail(url string) (string, error)
 }

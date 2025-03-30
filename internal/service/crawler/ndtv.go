@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"sportNews/internal/helper"
 	crawlerModel "sportNews/internal/model/crawler"
-	"sportNews/internal/repository"
 	"strings"
 	"xorm.io/xorm"
 )
@@ -16,14 +15,9 @@ type NDTVServ struct {
 	Domain string
 }
 
-func NewMDTVServ(db *xorm.EngineGroup) *NDTVServ {
-	repo := repository.New(db)
-
+func NewNDTVServ(db *xorm.EngineGroup) *NDTVServ {
 	return &NDTVServ{
-		Serv: &Serv{
-			Repo:   &repo,
-			Source: "ndtv",
-		},
+		Serv:   newServ(db, "ndtv"),
 		Domain: "https://sports.ndtv.com",
 	}
 }
@@ -39,25 +33,13 @@ func (s *NDTVServ) List(page int) ([]crawlerModel.News, error) {
 		"Accept-Language": "en-US,en;q=0.9,zh-TW;q=0.8",
 	}
 
-	req, err := helper.BuildHttpRequest("https://sports.ndtv.com/cricket/news", http.MethodGet, nil, headers)
-	if err != nil {
-		return nil, err
-	}
-
-	// 發送 HTTP 請求
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	url := "https://sports.ndtv.com/cricket/news"
+	resp, err := helper.SendHTTPRequest(url, http.MethodGet, headers, nil)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	// 檢查http code 是否為200
-	if resp.StatusCode != http.StatusOK {
-		return nil, nil
-	}
-
-	// 使用 goquery 解析 HTML
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
 		return nil, err
@@ -68,28 +50,31 @@ func (s *NDTVServ) List(page int) ([]crawlerModel.News, error) {
 	ul := doc.Find("ul#container_listing").First()
 	ul.Find("div.lst-pg-a").Each(func(i int, element *goquery.Selection) {
 		var m crawlerModel.News
+
 		// 標題
 		title := element.Find("a.lst-pg_ttl")
 		m.Title = title.Text()
+
 		// 詳細頁
 		href, exists := title.Attr("href")
 		if exists {
 			m.Link = s.Domain + href
 		}
+
 		// 描述
 		desc := element.Find("p.lst-pg_txt.txt_tct.txt_tct-three")
 		m.Description = desc.Text()
+
 		// 封面
 		img, exists := element.Find("img.lz_img.crd_img-full").Attr("src")
 		if exists {
 			m.Cover = img
 		}
 
+		// 發布時間
 		time := element.Find("span.lst-a_pst_lnk").First()
 		t, err := helper.ConverseToTimestamp(time.Text(), "Jan 2, 2006")
-		if err != nil {
-			// TODO
-		} else {
+		if err == nil {
 			m.Time = t
 		}
 
@@ -106,33 +91,26 @@ func (s *NDTVServ) Detail(url string) (string, error) {
 		"Accept-Language": "en-US,en;q=0.9,zh-TW;q=0.8",
 	}
 
-	req, err := helper.BuildHttpRequest(url, http.MethodGet, nil, headers)
-	if err != nil {
-		return "", err
-	}
-
-	// 發送 HTTP 請求
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := helper.SendHTTPRequest(url, http.MethodGet, headers, nil)
 	if err != nil {
 		return "", err
 	}
 	defer resp.Body.Close()
 
-	// 檢查http code 是否為200
-	if resp.StatusCode != http.StatusOK {
-		return "", nil
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+	if err != nil {
+		return "", err
 	}
 
-	// 使用 goquery 解析 HTML
-	doc, err := goquery.NewDocumentFromReader(resp.Body)
-	c := doc.Find("div.story__content ")
+	c := doc.Find("div.story__content")
 
 	content := strings.Builder{}
 	c.Find("p").Each(func(i int, s *goquery.Selection) {
-		content.WriteString("<p>")
-		content.WriteString(s.Text())
-		content.WriteString("</p>")
+		if len(s.Text()) > 0 {
+			content.WriteString("<p>")
+			content.WriteString(s.Text())
+			content.WriteString("</p>")
+		}
 	})
 
 	return content.String(), nil

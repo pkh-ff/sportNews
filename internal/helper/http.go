@@ -3,6 +3,7 @@ package helper
 import (
 	"net/http"
 	"net/url"
+	"time"
 )
 
 // BuildHttpRequest
@@ -32,4 +33,29 @@ func BuildHttpRequest(baseURL, method string, queryParams, hdrs map[string]strin
 	}
 
 	return req, nil
+}
+
+// SendHTTPRequest
+// 發送HTTP Request
+func SendHTTPRequest(url, method string, headers, queryParams map[string]string) (*http.Response, error) {
+	req, err := BuildHttpRequest(url, method, queryParams, headers)
+	if err != nil {
+		return nil, err
+	}
+
+	client := &http.Client{
+		Timeout: 10 * time.Second, // 設定超時時間
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	// 檢查 HTTP 回應碼
+	if resp.StatusCode != http.StatusOK {
+		resp.Body.Close()
+		return nil, nil
+	}
+
+	return resp, nil
 }
