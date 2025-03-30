@@ -1,8 +1,8 @@
 package service
 
 import (
-	"sportNews/internal/log"
 	"sportNews/internal/model/api"
+	"sportNews/pkg/log"
 )
 
 // GetVideoList

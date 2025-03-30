@@ -2,8 +2,8 @@ package service
 
 import (
 	"sportNews/internal/assets"
-	"sportNews/internal/log"
 	"sportNews/internal/model/api"
+	"sportNews/pkg/log"
 )
 
 // QueryNews

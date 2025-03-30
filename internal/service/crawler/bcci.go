@@ -9,7 +9,6 @@ import (
 	"sportNews/internal/model"
 	"strconv"
 	"strings"
-	"time"
 	"xorm.io/xorm"
 )
 
@@ -27,17 +26,7 @@ func NewBCCIServ(db *xorm.EngineGroup) *BCCIServ {
 }
 
 func (s *BCCIServ) Crawler() {
-	fmt.Println("====== BCCI rank Crawler Start ======")
-	typeList := enum.RankTypeList()
-	for i, v := range typeList {
-		// TODO 先檢查今天資料存不存在如果再存在就跳過，反之才會抓取資料
-		data := s.rank(v)
-		s.Serv.storeRankToDB(v, data)
-		if i < len(typeList) {
-			time.Sleep(5 * time.Second) // 避免頻率過快
-		}
-	}
-	fmt.Println("====== BCCI rank Crawler End ======")
+	s.Serv.CrawlerRankDataTemplate(s)
 }
 
 func (s *BCCIServ) rank(t enum.RankType) []model.RankDetail {

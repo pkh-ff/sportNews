@@ -197,3 +197,4 @@ $RECYCLE.BIN/
 app.conf.yaml
 process.conf.yaml
 .env
+logs/*.log

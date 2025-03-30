@@ -27,7 +27,7 @@ type ConfigNode struct {
 	Password string `mapstructure:"password"`
 }
 
-func New(mode string, conf Config) (*xorm.EngineGroup, error) {
+func New(debug bool, conf Config) (*xorm.EngineGroup, error) {
 	master, err := newNode(conf.Master, conf)
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func New(mode string, conf Config) (*xorm.EngineGroup, error) {
 	}
 
 	eg, err := xorm.NewEngineGroup(master, slaves)
-	if mode != "release" {
+	if debug {
 		eg.ShowSQL(true)
 	}
 

@@ -11,6 +11,11 @@ type Process struct {
 }
 
 func NDTVProcess(ctx context.Context, db *xorm.EngineGroup) {
-	serv := crawler.NewMDTVServ(db)
+	serv := crawler.NewNDTVServ(db)
 	serv.Crawler()
+	//serv := crawler.NewEspncricinfoServ(db)
+	//serv.Crawler()
+
+	//serv := crawler.NewBCCIServ(db)
+	//serv.Crawler()
 }

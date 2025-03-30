@@ -3,8 +3,8 @@ package service
 import (
 	"encoding/json"
 	"sportNews/internal/enum"
-	"sportNews/internal/log"
 	"sportNews/internal/model"
+	"sportNews/pkg/log"
 )
 
 // GetRankData

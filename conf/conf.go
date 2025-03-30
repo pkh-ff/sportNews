@@ -15,7 +15,7 @@ type Conf struct {
 type App struct {
 	Name         string `mapstructure:"name"`
 	Addr         string `mapstructure:"addr"`
-	Mode         string `mapstructure:"mode"`
+	Debug        bool   `mapstructure:"debug"`
 	ReadTimeout  string `mapstructure:"read_timeout"`
 	WriteTimeout string `mapstructure:"write_timeout"`
 }

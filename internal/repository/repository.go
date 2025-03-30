@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"sportNews/internal/log"
+	"sportNews/pkg/log"
 	"xorm.io/xorm"
 )
 

@@ -9,8 +9,8 @@ import (
 	"os/signal"
 	"sportNews/conf"
 	"sportNews/conf/database"
-	"sportNews/internal/log"
 	"sportNews/internal/process"
+	"sportNews/pkg/log"
 	"sync"
 	"syscall"
 	"time"
@@ -32,14 +32,18 @@ func main() {
 	if err != nil {
 		log.Error("setting conf", zap.Error(err))
 	}
+
 	log.Infof("setting conf", "conf:%v", config)
 	log.Info("app info", zap.String("Project", config.App.Name))
 
 	// setting database
-	db, err := database.New(config.App.Mode, config.DB)
+	db, err := database.New(config.App.Debug, config.DB)
 	if err != nil {
 		log.Error("init database", zap.Error(err))
 	}
+
+	// set log config
+	log.InitLogger(config.App.Debug)
 
 	crawlerProcess(ctx, db)
 
@@ -72,4 +76,5 @@ func shutdown(config *conf.Conf, db *xorm.EngineGroup) {
 	}
 
 	log.Infof("service shutdown", "%s Server is exit", config.App.Name)
+	log.CloseLogger()
 }

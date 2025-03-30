@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"sportNews/internal/enum"
-	"sportNews/internal/log"
 	"sportNews/internal/model"
 	"sportNews/internal/model/crawler"
 	"sportNews/internal/repository"
+	"sportNews/pkg/log"
 	"time"
 	"xorm.io/xorm"
 )
@@ -21,7 +21,7 @@ type Serv struct {
 // 新聞爬蟲模板
 func (s *Serv) CrawlerNewsTemplate(c NewsCrawler) {
 	fmt.Println("====== Crawler Start ======")
-	list, err := c.List(0)
+	list, err := c.list(0)
 	if err != nil {
 		return
 	}
@@ -38,7 +38,7 @@ func (s *Serv) CrawlerNewsTemplate(c NewsCrawler) {
 		}
 
 		time.Sleep(5 * time.Second) // 避免頻率過快
-		content, err := c.Detail(v.Link)
+		content, err := c.detail(v.Link)
 		if err != nil {
 			continue
 		}
@@ -48,6 +48,54 @@ func (s *Serv) CrawlerNewsTemplate(c NewsCrawler) {
 
 	s.storeNewsToDB(data)
 	fmt.Println("====== Crawler End ======")
+}
+
+// CrawlerNewsTemplate
+// 排行榜爬蟲模板
+func (s *Serv) CrawlerRankDataTemplate(c RankCrawler) {
+	fmt.Println("====== Crawler Rank Start ======")
+	typeList := enum.RankTypeList()
+
+	date := time.Now().Format("2006-01-02") // 獲取當前時間，並格式化為 "YYYY-MM-DD"
+	for i, v := range typeList {
+		// 檢查今天資料存不存在，如果再存在就跳過，反之才會抓取資料
+		b, err := s.Repo.CheckRankDataExist(date, v)
+		if err != nil {
+			// TODO
+			continue
+		}
+
+		if b == true {
+			continue
+		}
+
+		data := c.rank(v)
+		err = s.storeRankToDB(v, data)
+		if err != nil {
+			// TODO
+			continue
+		}
+
+		// 每個類型排行榜資料只留最新5筆
+		count, err := s.Repo.GetRankDataCountByType(v)
+		if err != nil {
+			// TODO
+			continue
+		}
+		if count >= 5 {
+			rankData, err := s.Repo.GetOldestRankDataByType(v)
+			if err != nil {
+				continue
+			}
+
+			err = s.Repo.DeleteRankData(rankData)
+		}
+
+		if i < len(typeList) {
+			time.Sleep(5 * time.Second) // 避免頻率過快
+		}
+	}
+	fmt.Println("====== Crawler Rank End ======")
 }
 
 func newServ(db *xorm.EngineGroup, source string) *Serv {
@@ -103,8 +151,8 @@ func (s *Serv) storeRankToDB(t enum.RankType, data []model.RankDetail) error {
 
 type NewsCrawler interface {
 	Crawler()
-	List(page int) ([]crawler.News, error)
-	Detail(url string) (string, error)
+	list(page int) ([]crawler.News, error)
+	detail(url string) (string, error)
 }
 
 type RankCrawler interface {

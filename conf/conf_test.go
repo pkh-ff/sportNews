@@ -14,7 +14,7 @@ func TestAppConfNew(t *testing.T) {
 		App: App{
 			Name:         "api-server",
 			Addr:         "9011",
-			Mode:         "debug",
+			Debug:        true,
 			ReadTimeout:  "10s",
 			WriteTimeout: "10s",
 		},
@@ -32,7 +32,8 @@ func TestProcessConfNew(t *testing.T) {
 
 	c := &Conf{
 		App: App{
-			Name: "crawler-process",
+			Name:  "crawler-process",
+			Debug: true,
 		},
 		DB:     newDBConf("kingler"),
 		Assets: "",

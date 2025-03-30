@@ -26,7 +26,7 @@ func (s *NDTVServ) Crawler() {
 	s.Serv.CrawlerNewsTemplate(s)
 }
 
-func (s *NDTVServ) List(page int) ([]crawlerModel.News, error) {
+func (s *NDTVServ) list(page int) ([]crawlerModel.News, error) {
 	headers := map[string]string{
 		"User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
 		"Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
@@ -84,7 +84,7 @@ func (s *NDTVServ) List(page int) ([]crawlerModel.News, error) {
 	return data, nil
 }
 
-func (s *NDTVServ) Detail(url string) (string, error) {
+func (s *NDTVServ) detail(url string) (string, error) {
 	headers := map[string]string{
 		"User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
 		"Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",

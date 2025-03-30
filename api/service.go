@@ -6,8 +6,8 @@ import (
 	"go.uber.org/zap"
 	"net/http"
 	"sportNews/conf"
-	"sportNews/internal/log"
 	"sportNews/internal/service"
+	"sportNews/pkg/log"
 	"time"
 	"xorm.io/xorm"
 )
@@ -27,7 +27,7 @@ func New(ctx context.Context, conf *conf.App, db *xorm.EngineGroup) *Server {
 		Serv: service.New(db),
 	}
 
-	e := engine()
+	e := engine(conf.Debug)
 	app.router(e)
 	app.Serv.Repo.NewDBSession()
 	addr := fmt.Sprintf(":%s", conf.Addr)

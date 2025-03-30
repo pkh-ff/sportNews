@@ -7,10 +7,15 @@ import (
 
 // Engine
 // init gin Engine
-func engine() *gin.Engine {
+func engine(debug bool) *gin.Engine {
 	e := &gin.Engine{}
 
-	gin.SetMode(gin.DebugMode) // TODO
+	if debug {
+		gin.SetMode(gin.DebugMode)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	e = gin.Default()
 
 	c := cors.DefaultConfig()

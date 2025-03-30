@@ -1,6 +1,6 @@
 app:
   name: crawler-process
-  mode: debug
+  debug: true
 
 db:
   database: kingler

@@ -3,8 +3,8 @@ package repository
 import (
 	"go.uber.org/zap"
 	"sportNews/internal/enum"
-	"sportNews/internal/log"
 	"sportNews/internal/model"
+	"sportNews/pkg/log"
 )
 
 // VideoList
