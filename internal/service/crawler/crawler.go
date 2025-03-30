@@ -1,6 +1,7 @@
 package crawler
 
 import (
+	"encoding/json"
 	"fmt"
 	"sportNews/internal/enum"
 	"sportNews/internal/log"
@@ -45,7 +46,7 @@ func (s *Serv) CrawlerNewsTemplate(c NewsCrawler) {
 		data = append(data, v)
 	}
 
-	s.storeToDB(data)
+	s.storeNewsToDB(data)
 	fmt.Println("====== Crawler End ======")
 }
 
@@ -58,8 +59,8 @@ func newServ(db *xorm.EngineGroup, source string) *Serv {
 	}
 }
 
-// story to db
-func (s *Serv) storeToDB(data []crawler.News) {
+// story news data to db
+func (s *Serv) storeNewsToDB(data []crawler.News) {
 	for _, v := range data {
 		news := model.News{
 			Title:       v.Title,
@@ -73,13 +74,40 @@ func (s *Serv) storeToDB(data []crawler.News) {
 		}
 		err := s.Repo.InsertNews(news)
 		if err != nil {
-			log.Errorf("storeToDB(), query count error:", err)
+			log.Errorf("storeNewsToDB(), query count error:", err)
 		}
 	}
+}
+
+// story rank data to db
+func (s *Serv) storeRankToDB(t enum.RankType, data []model.RankDetail) error {
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		log.Errorf("storeRankToDB(), query count error:", err)
+		return err
+	}
+
+	rank := model.SportRank{
+		Type: t,
+		Date: time.Now(),
+		Data: string(jsonData),
+	}
+
+	err = s.Repo.InsertRank(rank)
+	if err != nil {
+		log.Errorf("storeNewsToDB(), query count error:", err)
+	}
+
+	return nil
 }
 
 type NewsCrawler interface {
 	Crawler()
 	List(page int) ([]crawler.News, error)
 	Detail(url string) (string, error)
+}
+
+type RankCrawler interface {
+	Crawler()
+	rank(t enum.RankType) []model.RankDetail
 }

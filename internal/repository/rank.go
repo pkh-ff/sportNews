@@ -24,3 +24,15 @@ func (repo *Repository) GetRankDate(t enum.RankType) (model.SportRank, error) {
 
 	return data, nil
 }
+
+// InsertRank
+// 寫入排行榜資料
+func (repo *Repository) InsertRank(m model.SportRank) error {
+	log.Infof("repository.InsertRank()")
+	_, err := repo.db.Insert(m)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -1,16 +1,16 @@
 package model
 
 import (
+	"sportNews/internal/enum"
 	"time"
 )
 
 type SportRank struct {
-	Id          int       `xorm:"id"`
-	Type        string    `xorm:"type"`
-	Description string    `xorm:"description"`
-	Data        string    `xorm:"data"`
-	Date        time.Time `xorm:"date"`
-	CreateAt    time.Time `xorm:"create_at"`
+	Id       int           `xorm:"id"`
+	Type     enum.RankType `xorm:"type"`
+	Data     string        `xorm:"data"`
+	Date     time.Time     `xorm:"date"`
+	CreateAt time.Time     `xorm:"created create_at"`
 }
 
 func (SportRank) TableName() string {

@@ -9,12 +9,14 @@ const (
 )
 
 func IsRankTypeExist(rank RankType) bool {
-	list := []RankType{Test, Odi, T20}
-
-	for _, r := range list {
+	for _, r := range RankTypeList() {
 		if r == rank {
 			return true
 		}
 	}
 	return false
+}
+
+func RankTypeList() []RankType {
+	return []RankType{Test, Odi, T20}
 }
