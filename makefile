@@ -32,7 +32,7 @@ run:
 	make stop SERVER=$(SERVICE)
 	@echo start sportNews-$(SERVICE)
 ifeq ($(SERVICE), api-server)
-	docker run --rm -d --name sportNews-$(SERVICE) -p $(API_SERVER_PORT):9011 -e DB_MASTER_HOST=${DB_HOST} -e DB_MASTER_USERNAME=${DB_USERNAME} -e DB_MASTER_PASSWORD=${DB_PASSWORD} -e DB_SLAVE_HOST=${DB_HOST} -e DB_SLAVE_USERNAME=${DB_USERNAME} -e DB_SLAVE_PASSWORD=${DB_PASSWORD} hbbbbb.bets8888.com/sport-news/$(SERVICE):$(VERSION)
+	docker run --rm -d --name sportNews-$(SERVICE) -p $(API_SERVICE_PORT):9011 -e DB_MASTER_HOST=${DB_HOST} -e DB_MASTER_USERNAME=${DB_USERNAME} -e DB_MASTER_PASSWORD=${DB_PASSWORD} -e DB_SLAVE_HOST=${DB_HOST} -e DB_SLAVE_USERNAME=${DB_USERNAME} -e DB_SLAVE_PASSWORD=${DB_PASSWORD} hbbbbb.bets8888.com/sport-news/$(SERVICE):$(VERSION)
 else ifeq ($(SERVICE), crawler-server)
 	docker run --rm -d --name sportNews-$(SERVICE) -e DB_MASTER_HOST=${DB_HOST} -e DB_MASTER_USERNAME=${DB_USERNAME} -e DB_MASTER_PASSWORD=${DB_PASSWORD} -e DB_SLAVE_HOST=${DB_HOST} -e DB_SLAVE_USERNAME=${DB_USERNAME} -e DB_SLAVE_PASSWORD=${DB_PASSWORD} hbbbbb.bets8888.com/sport-news/$(SERVICE):$(VERSION)
 else
