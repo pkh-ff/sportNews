@@ -20,7 +20,7 @@ type Serv struct {
 // CrawlerNewsTemplate
 // 新聞爬蟲模板
 func (s *Serv) CrawlerNewsTemplate(c NewsCrawler) {
-	fmt.Println("====== Crawler Start ======")
+	fmt.Println("====== Crawler News Start ======")
 	list, err := c.list(0)
 	if err != nil {
 		return
@@ -47,10 +47,10 @@ func (s *Serv) CrawlerNewsTemplate(c NewsCrawler) {
 	}
 
 	s.storeNewsToDB(data)
-	fmt.Println("====== Crawler End ======")
+	fmt.Println("====== Crawler News End ======")
 }
 
-// CrawlerNewsTemplate
+// CrawlerRankDataTemplate
 // 排行榜爬蟲模板
 func (s *Serv) CrawlerRankDataTemplate(c RankCrawler) {
 	fmt.Println("====== Crawler Rank Start ======")

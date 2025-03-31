@@ -13,8 +13,6 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 
-
-#http://host.docker.internal:9011/api/v1/resource
 COPY . .
 
 RUN go build -ldflags '-s -w' -o /app/app ./cmd/app/main.go
@@ -26,6 +24,6 @@ WORKDIR /app
 
 COPY --from=builder /usr/local/go/lib/time/zoneinfo.zip /usr/local/go/lib/time/zoneinfo.zip
 COPY --from=builder /app .
-#COPY conf/app.conf.example.yaml ./app.conf.yaml
+COPY conf/app.conf.example.yaml ./app.conf.yaml
 
 CMD ["./app"]
