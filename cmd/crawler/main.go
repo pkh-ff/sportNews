@@ -27,7 +27,7 @@ func main() {
 	flag.StringVar(&confPath, "c", "process.conf.yaml", "default config path")
 	flag.Parse()
 
-	ctx := context.Background()
+	//ctx := context.Background()
 	config, err := conf.New(confPath)
 	if err != nil {
 		log.Error("setting conf", zap.Error(err))
@@ -45,18 +45,24 @@ func main() {
 	// set log config
 	log.InitLogger(config.App.Debug)
 
-	crawlerProcess(ctx, db)
+	crawlerProcess(config.App, db)
 
 	shutdown(config, db)
 	wg.Wait()
 }
 
-func crawlerProcess(ctx context.Context, db *xorm.EngineGroup) {
-	wg.Add(1)
-	wgCount += 1
+func crawlerProcess(conf conf.App, db *xorm.EngineGroup) {
+	wg.Add(2)
+	wgCount = 2
+
 	go func() {
 		defer wg.Done()
-		process.NDTVProcess(ctx, db)
+		process.NDTVProcess(conf, db)
+	}()
+
+	go func() {
+		defer wg.Done()
+		process.BCCIProcess(conf, db)
 	}()
 }
 

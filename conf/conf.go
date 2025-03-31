@@ -13,11 +13,17 @@ type Conf struct {
 }
 
 type App struct {
-	Name         string `mapstructure:"name"`
-	Addr         string `mapstructure:"addr"`
-	Debug        bool   `mapstructure:"debug"`
-	ReadTimeout  string `mapstructure:"read_timeout"`
-	WriteTimeout string `mapstructure:"write_timeout"`
+	Name         string  `mapstructure:"name"`
+	Addr         string  `mapstructure:"addr"`
+	Debug        bool    `mapstructure:"debug"`
+	Process      Process `mapstructure:"process"`
+	ReadTimeout  string  `mapstructure:"read_timeout"`
+	WriteTimeout string  `mapstructure:"write_timeout"`
+}
+
+type Process struct {
+	News    int `mapstructure:"news"`
+	Ranking int `mapstructure:"ranking"`
 }
 
 func init() {

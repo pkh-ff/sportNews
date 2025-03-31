@@ -6,7 +6,7 @@ app:
   write_timeout: 10s
 
 db:
-  database: kingler
+  database: longmen_game
   master:
     username: root
     password: 1234

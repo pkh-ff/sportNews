@@ -1,9 +1,12 @@
 app:
   name: crawler-process
   debug: true
+  process:
+    news: 1800 # 30分 60s * 30m
+    ranking: 86400 # 1天 60s * 60m *24h
 
 db:
-  database: kingler
+  database: longmen_game
   master:
     username: root
     password: 1234
