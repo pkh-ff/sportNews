@@ -42,3 +42,6 @@ stop:
 	@echo stop sportNews-$(SERVICE)
 	-docker stop sportNews-$(SERVICE)
 	-docker rm sportNews-$(SERVICE)
+
+migrations:
+	docker run --rm -v ${PROJECT_PATH}/migration/sql:/flyway/sql flyway/flyway -url=jdbc:mysql://${DB_HOST}:3306/longmen_member -user=${DB_USERNAME} -password=${DB_PASSWORD} migrate
