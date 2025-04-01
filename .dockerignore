@@ -1,0 +1,13 @@
+# 忽略環境變數文件
+.env
+.env.example
+
+# 忽略 Dockerfile 自己
+Dockerfile*
+
+# 忽略 makefile
+makefile
+
+#忽略log
+/logs
+/migration
