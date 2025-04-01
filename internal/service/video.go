@@ -1,6 +1,7 @@
 package service
 
 import (
+	"go.uber.org/zap"
 	"sportNews/internal/model/api"
 	"sportNews/pkg/log"
 )
@@ -8,13 +9,13 @@ import (
 // GetVideoList
 // 取得指定筆數影片列表
 func (s *Serv) GetVideoList() (interface{}, error) {
-	log.Info("service.GetVideoList()")
+	log.Info("GetVideoList: Start fetching video list")
 	videos, err := s.Repo.VideoList(10)
 	if err != nil {
-		log.Errorf("service.GetVideoList(), get data error: %v", err)
+		log.Error("GetVideoList: Failed to fetch video list from repository", zap.Error(err))
 		return nil, err
 	}
-	log.Infof("service.GetVideoList(), videos:%v", videos)
+	log.Info("GetVideoList: Video list fetched successfully", zap.Int("videoCount", len(videos)))
 
 	data := make([]api.VideoResp, 0)
 	for _, v := range videos {
@@ -25,7 +26,7 @@ func (s *Serv) GetVideoList() (interface{}, error) {
 			Link:        v.Link,
 		})
 	}
-	log.Infof("service.GetVideoList(), data:%v", data)
+	log.Info("GetVideoList: Video data transformed into API response", zap.Int("videoDataCount", len(data)))
 
 	return data, nil
 }

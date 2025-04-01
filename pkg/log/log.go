@@ -3,6 +3,8 @@ package log
 import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"gopkg.in/natefinch/lumberjack.v2"
+	"os"
 )
 
 var (
@@ -40,6 +42,29 @@ func InitLogger(isDev bool) {
 		panic("Failed to initialize logger: " + err.Error())
 	}
 
+	fileWriter := zapcore.AddSync(&lumberjack.Logger{
+		Filename:   "logs/app.log", // 日誌檔案路徑
+		MaxSize:    50,             // 單檔最大 50MB
+		MaxBackups: 5,              // 最多保留 5 個備份
+		MaxAge:     7,              // 最多保留 7 天
+		Compress:   true,           // 是否壓縮舊日誌
+	})
+
+	// 設定 log 等級
+	level := zap.InfoLevel
+	if isDev {
+		level = zap.DebugLevel
+	}
+
+	// 建立 core，將 log 寫入終端與檔案
+	core := zapcore.NewCore(
+		zapcore.NewJSONEncoder(cfg.EncoderConfig),                           // JSON 格式
+		zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), fileWriter), // 同時輸出到終端與檔案
+		level, // 設定 log 等級
+	)
+
+	// 生成 logger
+	logger = zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
 	sugaredLogger = logger.Sugar()
 }
 

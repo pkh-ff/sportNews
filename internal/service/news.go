@@ -1,6 +1,7 @@
 package service
 
 import (
+	"go.uber.org/zap"
 	"sportNews/internal/assets"
 	"sportNews/internal/model/api"
 	"sportNews/pkg/log"
@@ -9,14 +10,14 @@ import (
 // QueryNews
 // 新聞列表
 func (s *Serv) QueryNews(page, size int) (api.NewsPageResp, error) {
-	log.Info("service.QueryNews()")
+	log.Info("QueryNews: Start fetching news list", zap.Int("page", page), zap.Int("size", size))
 	start := (page - 1) * size
 	news, err := s.Repo.QueryNewsByPage(size, start)
 	if err != nil {
-		log.Errorf("service.QueryNews(), get news error: %v", err)
+		log.Error("QueryNews: Failed to fetch news from database", zap.Error(err))
 		return api.NewsPageResp{}, err
 	}
-	log.Infof("service.QueryNews(), news:%v", news)
+	log.Info("QueryNews: News fetched successfully", zap.Int("newsCount", len(news)))
 
 	data := make([]api.NewsList, 0)
 	for _, v := range news {
@@ -29,11 +30,11 @@ func (s *Serv) QueryNews(page, size int) (api.NewsPageResp, error) {
 			PubDate:     v.PubDate,
 		})
 	}
-	log.Infof("service.QueryNews(), data:%v", data)
+	log.Info("QueryNews: News data processed", zap.Int("newsDataCount", len(data)))
 
 	count, err := s.Repo.QueryNewsCount()
 	if err != nil {
-		log.Errorf("service.QueryNews(), get news data count error: %v", err)
+		log.Error("QueryNews: Failed to fetch news count from database", zap.Error(err))
 		return api.NewsPageResp{}, err
 	}
 
@@ -41,7 +42,7 @@ func (s *Serv) QueryNews(page, size int) (api.NewsPageResp, error) {
 	if int(count)%size > 0 {
 		pn = pn + 1
 	}
-	log.Infof("service.QueryNews(), TotalCount:%v, TotalPage:%v", count, pn)
+	log.Info("QueryNews: Pagination calculated", zap.Int("totalCount", int(count)), zap.Int("totalPages", pn))
 
 	return api.NewsPageResp{
 		Records:    data,
@@ -53,11 +54,13 @@ func (s *Serv) QueryNews(page, size int) (api.NewsPageResp, error) {
 // FindNews
 // 取得新聞詳情
 func (s *Serv) FindNews(id int) (api.NewsDetail, error) {
-	log.Infof("service.FindNews(), id:", id)
+	log.Info("FindNews: Start fetching news details", zap.Int("id", id))
 	data, err := s.Repo.FindNews(id)
 	if err != nil {
+		log.Error("FindNews: Failed to fetch news details from database", zap.Int("id", id), zap.Error(err))
 		return api.NewsDetail{}, err
 	}
+	log.Info("FindNews: News details fetched successfully", zap.Int("id", id))
 
 	return api.NewsDetail{
 		Title:       data.Title,

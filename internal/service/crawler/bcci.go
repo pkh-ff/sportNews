@@ -3,10 +3,12 @@ package crawler
 import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
+	"go.uber.org/zap"
 	"net/http"
 	"sportNews/internal/enum"
 	"sportNews/internal/helper"
 	"sportNews/internal/model"
+	"sportNews/pkg/log"
 	"strconv"
 	"strings"
 	"xorm.io/xorm"
@@ -26,6 +28,7 @@ func NewBCCIServ(db *xorm.EngineGroup) *BCCIServ {
 }
 
 func (s *BCCIServ) Crawler() {
+	log.Info("Crawler: Starting ranking data crawling")
 	s.Serv.CrawlerRankDataTemplate(s)
 }
 
@@ -40,16 +43,15 @@ func (s *BCCIServ) rank(t enum.RankType) []model.RankDetail {
 
 	resp, err := helper.SendHTTPRequest(url, http.MethodGet, headers, nil)
 	if err != nil {
-		// TODO LOG
-		fmt.Println(err)
-		//return "", err
+		log.Error("rank: Failed to send HTTP request", zap.String("url", url), zap.Error(err))
+		return nil
 	}
 	defer resp.Body.Close()
 
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
-		// TODO LOG
-		fmt.Println(err)
+		log.Error("BCCIServ.rank: Failed to parse HTML document", zap.Error(err))
+		return nil
 	}
 
 	//fmt.Println(doc.Html())
@@ -64,7 +66,7 @@ func (s *BCCIServ) rank(t enum.RankType) []model.RankDetail {
 	rOther := doc.Find("div.ranking-data-table.table-responsive").First()
 	ranks := getRankOtherData(rOther)
 	data = append(data, ranks...)
-	fmt.Println(data)
+
 	return data
 }
 
@@ -80,6 +82,7 @@ func getRankTopData(s *goquery.Selection) model.RankDetail {
 	rank := strings.TrimPrefix(s.Find(".rank-number h1").Text(), "#")
 	position, err := strconv.Atoi(rank)
 	if err != nil {
+		log.Warn("getRankTopData: Failed to parse rank number", zap.String("rank", rank), zap.Error(err))
 		position = 0 // 如果轉換失敗，預設為 0
 	}
 
@@ -91,7 +94,7 @@ func getRankTopData(s *goquery.Selection) model.RankDetail {
 	s.Find(".ranking-top-table table tbody tr td").Each(func(i int, s *goquery.Selection) {
 		value, err := strconv.Atoi(s.Find("p").Text())
 		if err != nil {
-			// TODO LOG
+			log.Warn("getRankTopData: Failed to parse integer value", zap.String("value", s.Text()), zap.Error(err))
 			value = 0
 		}
 
@@ -134,7 +137,7 @@ func getRankOtherData(s *goquery.Selection) []model.RankDetail {
 		positionStr := tr.Find("td h5").Text()
 		position, err := strconv.Atoi(strings.TrimSpace(positionStr))
 		if err != nil {
-			// TODO LOG
+			log.Warn("getRankOtherData: Failed to parse position", zap.String("position", positionStr), zap.Error(err))
 			position = 0
 		}
 		detail.Position = position
@@ -142,16 +145,16 @@ func getRankOtherData(s *goquery.Selection) []model.RankDetail {
 		matchesStr := tr.Find("td p").Eq(0).Text()
 		matches, err := strconv.Atoi(matchesStr)
 		if err != nil {
+			log.Warn("getRankOtherData: Failed to parse matches", zap.String("matches", matchesStr), zap.Error(err))
 			matches = 0
-			// TODO LOG
 		}
 		detail.Matches = matches
 
 		pointsStr := tr.Find("td p").Eq(1).Text()
 		points, err := strconv.Atoi(pointsStr)
 		if err != nil {
+			log.Warn("getRankOtherData: Failed to parse points", zap.String("points", pointsStr), zap.Error(err))
 			points = 0
-			// TODO LOG
 		}
 		detail.Points = points
 
@@ -159,8 +162,8 @@ func getRankOtherData(s *goquery.Selection) []model.RankDetail {
 		ratingsStr := tr.Find("td p").Eq(2).Text()
 		ratings, err := strconv.Atoi(ratingsStr)
 		if err != nil {
+			log.Warn("getRankOtherData: Failed to parse ratings", zap.String("ratings", ratingsStr), zap.Error(err))
 			ratings = 0
-			// TODO LOG
 		}
 		detail.Rating = ratings
 

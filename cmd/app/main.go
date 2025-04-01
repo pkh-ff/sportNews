@@ -32,17 +32,18 @@ func main() {
 	if err != nil {
 		log.Error("setting conf", zap.Error(err))
 	}
-	log.Infof("setting conf", "conf:%v", config)
-	log.Info("app info", zap.String("Project", config.App.Name))
 
-	// setting database
+	// logger設定
+	log.InitLogger(config.App.Debug)
+
+	log.Infof("Config loaded: %+v", config)
+	log.Info("App Info", zap.String("Project", config.App.Name))
+
+	// 設定資料庫
 	db, err := database.New(config.App.Debug, config.DB)
 	if err != nil {
-		log.Error("init database", zap.Error(err))
+		log.Fatal("Failed to initialize database", zap.Error(err))
 	}
-
-	// set log config
-	log.InitLogger(config.App.Debug)
 
 	assets.Setup(config.Assets)
 
@@ -56,13 +57,15 @@ func shutdown(config *conf.Conf, db *xorm.EngineGroup) {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
 	s := <-quit
-	log.Debugf("service shutdown", "get a signal %s. %s Server is shutting down ...", s.String(), config.App.Name)
+	log.Debugf("get a signal %s. %s Server is shutting down ...", s.String(), config.App.Name)
 
 	_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	db.Close()
+	if err := db.Close(); err != nil {
+		log.Warnf("Database close error: %v", err)
+	}
 
-	log.Infof("service shutdown", "%s Server is exit", config.App.Name)
+	log.Infof("%s Server is exiting...", config.App.Name)
 	log.CloseLogger()
 }

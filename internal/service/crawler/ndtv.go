@@ -2,9 +2,11 @@ package crawler
 
 import (
 	"github.com/PuerkitoBio/goquery"
+	"go.uber.org/zap"
 	"net/http"
 	"sportNews/internal/helper"
 	crawlerModel "sportNews/internal/model/crawler"
+	"sportNews/pkg/log"
 	"strings"
 	"xorm.io/xorm"
 )
@@ -23,10 +25,13 @@ func NewNDTVServ(db *xorm.EngineGroup) *NDTVServ {
 }
 
 func (s *NDTVServ) Crawler() {
+	log.Info("Crawler: Starting news crawl", zap.String("source", s.Source))
 	s.Serv.CrawlerNewsTemplate(s)
 }
 
 func (s *NDTVServ) list(page int) ([]crawlerModel.News, error) {
+	log.Info("list: Fetching news list", zap.Int("page", page))
+
 	headers := map[string]string{
 		"User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
 		"Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
@@ -36,12 +41,15 @@ func (s *NDTVServ) list(page int) ([]crawlerModel.News, error) {
 	url := "https://sports.ndtv.com/cricket/news"
 	resp, err := helper.SendHTTPRequest(url, http.MethodGet, headers, nil)
 	if err != nil {
+		log.Error("list: Failed to send HTTP request", zap.String("url", url), zap.Error(err))
+
 		return nil, err
 	}
 	defer resp.Body.Close()
 
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
+		log.Error("list: Failed to parse document", zap.String("url", url), zap.Error(err))
 		return nil, err
 	}
 
@@ -74,7 +82,9 @@ func (s *NDTVServ) list(page int) ([]crawlerModel.News, error) {
 		// 發布時間
 		time := element.Find("span.lst-a_pst_lnk").First()
 		t, err := helper.ConverseToTimestamp(time.Text(), "Jan 2, 2006")
-		if err == nil {
+		if err != nil {
+			log.Error("list: Failed to parse time", zap.String("time", time.Text()), zap.Error(err))
+		} else {
 			m.Time = t
 		}
 
@@ -85,6 +95,8 @@ func (s *NDTVServ) list(page int) ([]crawlerModel.News, error) {
 }
 
 func (s *NDTVServ) detail(url string) (string, error) {
+	log.Info("detail: Fetching article details", zap.String("url", url))
+
 	headers := map[string]string{
 		"User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
 		"Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
@@ -93,12 +105,14 @@ func (s *NDTVServ) detail(url string) (string, error) {
 
 	resp, err := helper.SendHTTPRequest(url, http.MethodGet, headers, nil)
 	if err != nil {
+		log.Error("detail: Failed to send HTTP request", zap.String("method", "detail"), zap.String("url", url), zap.Error(err))
 		return "", err
 	}
 	defer resp.Body.Close()
 
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
+		log.Error("detail: Failed to parse document", zap.String("method", "detail"), zap.String("url", url), zap.Error(err))
 		return "", err
 	}
 

@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"go.uber.org/zap"
 	"sportNews/pkg/log"
 	"xorm.io/xorm"
 )
@@ -17,16 +18,21 @@ func New(db *xorm.EngineGroup) Repository {
 }
 
 func (repo Repository) NewDBSession() *xorm.Session {
+	log.Info("NewDBSession: Creating a new DB session", zap.Int("repositoryIdx", repo.idx))
 	return repo.db.NewSession()
 }
 
 func (repo Repository) Close() (err error) {
 	if repo.db != nil {
+		log.Info("NewDBSession: Creating a new DB session", zap.Int("repositoryIdx", repo.idx))
 		if err = repo.db.Close(); err != nil {
-			log.Errorf("repository::Close", "Repository(%d) failed to close database connection, err = %v", repo.idx, err)
+			log.Error("Close: Failed to close database connection", zap.Int("repositoryIdx", repo.idx), zap.Error(err))
+		} else {
+			log.Infof("Close: Successfully closed the database connection for Repository(%d)", repo.idx)
 		}
-		log.Infof("Repository(%d) closed the db connection.", repo.idx)
+	} else {
+		log.Warn("Close: Repository database connection is already nil", zap.Int("repositoryIdx", repo.idx))
 	}
 
-	return
+	return err
 }

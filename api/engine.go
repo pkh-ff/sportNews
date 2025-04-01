@@ -3,26 +3,27 @@ package api
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
+	"sportNews/pkg/log"
 )
 
 // Engine
 // init gin Engine
 func engine(debug bool) *gin.Engine {
-	e := &gin.Engine{}
-
 	if debug {
 		gin.SetMode(gin.DebugMode)
 	} else {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	e = gin.Default()
+	e := gin.Default()
 
 	c := cors.DefaultConfig()
 	c.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization"}
-	c.AllowAllOrigins = true
+	c.AllowOrigins = []string{"*"}
 
 	e.Use(cors.New(c))
 
+	log.Info("Gin engine initialized", zap.Bool("debugMode", debug))
 	return e
 }

@@ -44,11 +44,22 @@ func New(ctx context.Context, conf *conf.App, db *xorm.EngineGroup) *Server {
 }
 
 func (serv *Server) Run() {
-	if err := serv.HttpServer.ListenAndServe(); err != nil {
-		log.Error("run http server", zap.Error(err))
+	log.Info("Starting HTTP server", zap.String("address", serv.HttpServer.Addr))
+	if err := serv.HttpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Error("Failed to start HTTP server", zap.Error(err))
+	} else {
+		log.Info("HTTP server stopped")
 	}
 }
 
 func (serv *Server) Shutdown(ctx context.Context) error {
-	return serv.Shutdown(ctx)
+	log.Info("Shutting down HTTP server")
+	err := serv.HttpServer.Shutdown(ctx)
+	if err != nil {
+		log.Error("HTTP server shutdown error", zap.Error(err))
+		return err
+	}
+
+	log.Info("HTTP server shutdown successfully")
+	return nil
 }

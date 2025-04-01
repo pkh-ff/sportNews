@@ -1,9 +1,10 @@
 package process
 
 import (
-	"log"
+	"go.uber.org/zap"
 	"sportNews/conf"
 	"sportNews/internal/service/crawler"
+	"sportNews/pkg/log"
 	"time"
 	"xorm.io/xorm"
 )
@@ -15,7 +16,7 @@ type Process struct {
 func NDTVProcess(conf conf.App, db *xorm.EngineGroup) {
 	serv := crawler.NewNDTVServ(db)
 	for {
-		log.Printf("run NDTVProcess on %v", time.Now().String())
+		log.Info("NDTVProcess: Starting NDTV crawler", zap.Time("startTime", time.Now()))
 		serv.Crawler()
 
 		time.Sleep(time.Duration(conf.Process.News) * time.Second)
@@ -26,7 +27,7 @@ func NDTVProcess(conf conf.App, db *xorm.EngineGroup) {
 func BCCIProcess(conf conf.App, db *xorm.EngineGroup) {
 	serv := crawler.NewBCCIServ(db)
 	for {
-		log.Printf("run BCCIProcess on %v", time.Now().String())
+		log.Info("BCCIProcess: Starting BCCI crawler", zap.Time("startTime", time.Now()))
 		serv.Crawler()
 
 		time.Sleep(time.Duration(conf.Process.Ranking) * time.Second)
