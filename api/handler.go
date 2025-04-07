@@ -1,10 +1,13 @@
 package api
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 	"net/http"
 	"sportNews/internal/enum"
+	"sportNews/internal/model/api"
 	"sportNews/internal/response"
 	"sportNews/pkg/log"
 	"strconv"
@@ -104,6 +107,24 @@ func (app App) rank(c *gin.Context) error {
 
 func (app App) feedback(c *gin.Context) error {
 	log.Info("health check endpoint accessed")
+
+	var req api.FeedbackReq
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		var ve validator.ValidationErrors
+		if errors.As(err, &ve) {
+			errMsgs := make([]string, 0)
+			// 檢查哪些欄位錯誤
+			for _, fe := range ve {
+				field := fe.Field()
+				errMsgs = append(errMsgs, field+" is invalid")
+			}
+
+			// 返回錯誤訊息
+			return response.ParameterError(errMsgs)
+		}
+	}
+
 	c.JSON(http.StatusOK, response.Success(""))
 
 	return nil
