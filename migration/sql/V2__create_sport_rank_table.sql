@@ -3,8 +3,9 @@ CREATE TABLE IF NOT EXISTS `sport_rank` (
   `type` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
   `data` text COLLATE utf8mb4_general_ci NOT NULL,
   `date` date NOT NULL,
-  `create_at` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+  `create_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '建立時間',
   PRIMARY KEY (`id`),
   KEY `idx_type` (`type`) USING BTREE,
   KEY `idx_type_date` (`type`,`date`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+

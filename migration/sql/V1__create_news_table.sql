@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS `news` (
   `status` tinyint NOT NULL DEFAULT '1' COMMENT '狀態，上架:1、下架:0',
   `source` varchar(30) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '來源',
   `pub_date` timestamp NOT NULL COMMENT '發佈時間',
-  `create_at` timestamp NOT NULL DEFAULT (now()) COMMENT '建立時間',
-  `update_at` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+  `create_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '建立時間',
+  `update_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新時間',
   PRIMARY KEY (`id`),
   KEY `idx_title_source` (`title`,`source`) USING BTREE,
   KEY `idx_status` (`status`) USING BTREE
