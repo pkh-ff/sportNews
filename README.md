@@ -12,7 +12,7 @@ News：2小時執行一次，依上次執行時間來決定下次執行時間
 
 Rank：12小時執行一次，依上次執行時間來決定下次執行時間
 
-> 爬取時間區間可以透過[服務參數](#服務參數)中的***PROCESS_NEWS***與***PROCESS_RANKING***分別進行設定
+> 爬取時間區間可以透過[服務參數](#服務參數)中的`PROCESS_NEWS`與`PROCESS_RANKING`分別進行設定
 
 ## Development Guide
 

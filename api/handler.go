@@ -20,6 +20,7 @@ func (app App) router(e *gin.Engine) {
 	e.GET("/news/:id", response.ErrHandler(app.newsDetail))
 	e.GET("/video", response.ErrHandler(app.video))
 	e.GET("/rank/:type", response.ErrHandler(app.rank))
+	e.POST("/feedback", response.ErrHandler(app.feedback))
 }
 
 func (app App) healthHandler(c *gin.Context) error {
@@ -98,5 +99,12 @@ func (app App) rank(c *gin.Context) error {
 	}
 
 	c.JSON(http.StatusOK, response.Success(rank))
+	return nil
+}
+
+func (app App) feedback(c *gin.Context) error {
+	log.Info("health check endpoint accessed")
+	c.JSON(http.StatusOK, response.Success(""))
+
 	return nil
 }
