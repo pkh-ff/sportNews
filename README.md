@@ -6,7 +6,13 @@ API服務
 
 ***crawler***
 
-爬蟲服務，透過常駐程序的方式，定期去爬取資料，相關爬取時間區如下
+爬蟲服務，透過常駐程序的方式，定期去爬取資料，預設爬取時間區間如下
+
+News：30分鐘執行一次，依上次執行時間來決定下次執行時間
+
+Rank：12小時執行一次，依上次執行時間來決定下次執行時間
+
+> 爬取時間區間可以透過[服務參數](#服務參數)中的***PROCESS_NEWS***與***PROCESS_RANKING***分別進行設定
 
 ## Development Guide
 
@@ -153,18 +159,20 @@ make run SERVICE=crawler-server VERSION=0.0.1
 
 ***Crawler Server***
 
-| 參數                 | 說明                   |
-|--------------------|----------------------|
-| APP_NAME           | 服務名稱                 |
-| APP_DEBUG          | 是否啟用debug模式          |
-| DB_MASTER_HOST     | 主資料庫 連線 Host address |
-| DB_MASTER_USERNAME | 主資料庫 帳號              |
-| DB_MASTER_PASSWORD | 主資料庫 密碼              |
-| DB_MASTER_PORT     | 主資料庫 連線Port號         |
-| DB_SLAVER_HOST     | 從資料庫 連線 Host address |
-| DB_SLAVE_USERNAME  | 從資料庫 帳號              |
-| DB_SLAVE_PASSWORD  | 從資料庫 連線Port號         |
-| DB_SLAVE_PORT      | 從資料庫 連線Port號         |
+| 參數                  | 說明                   |
+|---------------------|----------------------|
+| APP_NAME            | 服務名稱                 |
+| APP_DEBUG           | 是否啟用debug模式          |
+| APP_PROCESS_NEWS    | 新聞爬蟲執行間格時間(秒)        |
+| APP_PROCESS_RANKING | 爬行榜爬蟲執行間格時間(秒)       |
+| DB_MASTER_HOST      | 主資料庫 連線 Host address |
+| DB_MASTER_USERNAME  | 主資料庫 帳號              |
+| DB_MASTER_PASSWORD  | 主資料庫 密碼              |
+| DB_MASTER_PORT      | 主資料庫 連線Port號         |
+| DB_SLAVER_HOST      | 從資料庫 連線 Host address |
+| DB_SLAVE_USERNAME   | 從資料庫 帳號              |
+| DB_SLAVE_PASSWORD   | 從資料庫 連線Port號         |
+| DB_SLAVE_PORT       | 從資料庫 連線Port號         |
 
 > `服務參數`可以使用yaml或環境變數來進行設定，並以環境變數為優先
 
