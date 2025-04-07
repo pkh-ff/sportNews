@@ -47,7 +47,11 @@ cp ./.env.example .env
 
 ### db migration
 
-step1. 請先建立sport_news DB
+step1. 請先建立`sport_news` DB
+
+```sql
+CREATE DATABASE IF NOT EXISTS `sport_news` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
+```
 
 step2. 執行db migration
 
