@@ -6,7 +6,7 @@ app:
     ranking: 43200 # 1天 60s * 60m *12hr
 
 db:
-  database: longmen_game
+  database: sport_news
   master:
     username: root
     password: 1234

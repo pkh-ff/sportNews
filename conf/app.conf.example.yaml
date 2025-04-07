@@ -6,7 +6,7 @@ app:
   write_timeout: 10s
 
 db:
-  database: longmen_game
+  database: sport_news
   master:
     username: root
     password: 1234
