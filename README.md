@@ -125,6 +125,8 @@ make run SERVICE=api-server VERSION=0.0.1
 make run SERVICE=crawler-server VERSION=0.0.1 
 ```
 
+> 如果不使用make去執行，可以從[`makefile`](./makefile)檔案對照要執行命令去查看相關指令
+
 ## Other
 
 ### 環境變數&服務參數
