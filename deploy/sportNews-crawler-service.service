@@ -1,0 +1,12 @@
+[Unit]
+Description=SportNews
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=sh crawler-server-restart.sh
+WorkingDirectory=/home/deploy/app/sportNews
+Restart=on-failure
+RestartSec=10s
+
+[Install]

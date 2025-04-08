@@ -1,0 +1,13 @@
+[Unit]
+Description=SportNews
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=sh api-server-restart.sh
+WorkingDirectory=/home/deploy/app/sportNews
+Restart=on-failure
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target
