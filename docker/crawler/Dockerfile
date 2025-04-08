@@ -5,7 +5,7 @@ ENV GO111MODULE=on
 ENV CGO_ENABLED=0
 ENV GOOS=linux
 ENV GOARCH=amd64
-ARG GOPROXY
+ARG GOPROXY=https://goproxy.io,https://goproxy.cn,direct
 ENV GOPROXY=${GOPROXY}
 
 WORKDIR /app
