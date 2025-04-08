@@ -1,8 +1,9 @@
 package assets
 
 import (
+	"fmt"
 	"net/url"
-	"path"
+	"strings"
 )
 
 var assetsPath = ""
@@ -25,5 +26,5 @@ func FullPath(p string) string {
 		return p
 	}
 
-	return path.Join(assetsPath, p)
+	return strings.TrimRight(assetsPath, "/") + "/" + strings.TrimLeft(p, "/")
 }
