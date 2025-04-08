@@ -1,7 +1,6 @@
 package assets
 
 import (
-	"fmt"
 	"net/url"
 	"strings"
 )
