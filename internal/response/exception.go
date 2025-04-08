@@ -67,7 +67,7 @@ func ErrHandler(h HandlerFunc) gin.HandlerFunc {
 var (
 	ErrInternal   = InternalError()
 	ErrNoRows     = NotFound()
-	ErrParameter  = ParameterError()
+	ErrParameter  = ParameterError(nil)
 	ErrInsertFail = InsertFail()
 	ErrUpdateFail = UpdateFail()
 	ErrDeleteFail = DeleteFail()
