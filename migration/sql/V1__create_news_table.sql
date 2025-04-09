@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS `news` (
   `create_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '建立時間',
   `update_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新時間',
   PRIMARY KEY (`id`),
+  UNIQUE INDEX `unique_title_source` (`title`, `source`) USING BTREE,
   KEY `idx_title_source` (`title`,`source`) USING BTREE,
   KEY `idx_status` (`status`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
