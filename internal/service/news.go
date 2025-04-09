@@ -2,6 +2,7 @@ package service
 
 import (
 	"go.uber.org/zap"
+	"regexp"
 	"sportNews/internal/assets"
 	"sportNews/internal/model/api"
 	"sportNews/pkg/log"
@@ -62,12 +63,15 @@ func (s *Serv) FindNews(id int) (api.NewsDetail, error) {
 	}
 	log.Info("FindNews: News details fetched successfully", zap.Int("id", id))
 
+	re := regexp.MustCompile(`https?://[^\s]+`) // 匹配任何以 http:// 或 https:// 開頭，後面接著不是空白字元（[^\s]）的一串文字
+	content := re.ReplaceAllString(data.Content, "")
+
 	return api.NewsDetail{
 		Title:       data.Title,
 		Cover:       assets.FullPath(data.Cover),
 		CoverSource: data.CoverSource,
 		Description: data.Description,
-		Content:     data.Content,
+		Content:     content,
 		PubDate:     data.PubDate,
 	}, nil
 }
