@@ -6,7 +6,7 @@ import (
 )
 
 type News struct {
-	Id          int32       `xorm:"id"`
+	Id          int32       `xorm:"id pk autoincr"`
 	Title       string      `xorm:"title"`
 	Description string      `xorm:"description"`
 	Cover       string      `xorm:"cover"`

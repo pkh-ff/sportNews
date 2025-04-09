@@ -4,18 +4,38 @@ go 1.24.1
 
 require (
 	github.com/PuerkitoBio/goquery v1.10.2
+	github.com/aws/aws-sdk-go-v2 v1.36.3
+	github.com/aws/aws-sdk-go-v2/config v1.29.13
+	github.com/aws/aws-sdk-go-v2/credentials v1.17.66
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.79.1
 	github.com/gin-contrib/cors v1.7.4
 	github.com/gin-gonic/gin v1.10.0
+	github.com/go-playground/validator/v10 v10.25.0
 	github.com/go-sql-driver/mysql v1.9.1
 	github.com/spf13/viper v1.20.0
 	github.com/stretchr/testify v1.10.0
 	go.uber.org/zap v1.27.0
+	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	xorm.io/xorm v1.3.9
 )
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/andybalholm/cascadia v1.3.3 // indirect
+	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.6.10 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.30 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.34 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.34 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.3 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/v4a v1.3.34 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.12.3 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.7.0 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.12.15 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.18.15 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.25.3 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.30.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.33.18 // indirect
+	github.com/aws/smithy-go v1.22.2 // indirect
 	github.com/bytedance/sonic v1.13.2 // indirect
 	github.com/bytedance/sonic/loader v0.2.4 // indirect
 	github.com/cloudwego/base64x v0.1.5 // indirect
@@ -25,7 +45,6 @@ require (
 	github.com/gin-contrib/sse v1.0.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.25.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
@@ -54,7 +73,6 @@ require (
 	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
-	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v2 v2.2.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	xorm.io/builder v0.3.13 // indirect

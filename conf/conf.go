@@ -10,6 +10,7 @@ type Conf struct {
 	App    App             `mapstructure:"app"`
 	DB     database.Config `mapstructure:"db"`
 	Assets string          `mapstructure:"assets"`
+	Aws    Aws             `mapstructure:"aws"`
 }
 
 type App struct {
@@ -21,9 +22,17 @@ type App struct {
 	WriteTimeout string  `mapstructure:"write_timeout"`
 }
 
+type Aws struct {
+	AccessKey string `mapstructure:"accesskey"`
+	SecretKey string `mapstructure:"secretkey"`
+	Bucket    string `mapstructure:"bucket"`
+	Region    string `mapstructure:"region"`
+}
+
 type Process struct {
-	News    int `mapstructure:"news"`
-	Ranking int `mapstructure:"ranking"`
+	News        int `mapstructure:"news"`
+	Ranking     int `mapstructure:"ranking"`
+	SyncPicture int `mapstructure:"picture"`
 }
 
 func init() {

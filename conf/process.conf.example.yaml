@@ -2,8 +2,9 @@ app:
   name: crawler-process
   debug: true
   process:
-    news: 7200 # 2小時 60s * 60m
-    ranking: 43200 # 1天 60s * 60m *12hr
+    news: 7200 # 2小時 (60s * 60m * 2h)
+    ranking: 43200 # 12小時 (60s * 60m *12hr)
+    picture: 1800 # 2小時 (60s * 30m)
 
 db:
   database: sport_news

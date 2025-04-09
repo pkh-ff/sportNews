@@ -18,7 +18,7 @@ func TestAppConfNew(t *testing.T) {
 			ReadTimeout:  "10s",
 			WriteTimeout: "10s",
 		},
-		DB:     newDBConf("longmen_game"),
+		DB:     newDBConf("sport_news"),
 		Assets: "http://assets.localhost",
 	}
 
@@ -35,11 +35,12 @@ func TestProcessConfNew(t *testing.T) {
 			Name:  "crawler-process",
 			Debug: true,
 			Process: Process{
-				News:    1800,
-				Ranking: 86400,
+				News:        7200,
+				Ranking:     43200,
+				SyncPicture: 1800,
 			},
 		},
-		DB:     newDBConf("longmen_game"),
+		DB:     newDBConf("sport_news"),
 		Assets: "",
 	}
 

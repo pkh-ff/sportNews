@@ -3,8 +3,13 @@ package helper
 import (
 	"fmt"
 	"go.uber.org/zap"
+	"io"
+	"net/http"
+	"net/url"
 	"os"
+	"path"
 	"sportNews/pkg/log"
+	"strings"
 )
 
 // WriteToFile
@@ -38,4 +43,46 @@ func WriteToFile(filename, content string) error {
 
 	log.Info("WriteToFile: Successfully wrote content to file", zap.String("filename", filename))
 	return nil
+}
+
+// GetFileNameFromURL
+// 取得檔名(含副檔名)
+func GetFileNameFromURL(urlStr string) (string, error) {
+	// 解析 URL，去除查詢字符串
+	parsedURL, err := url.Parse(urlStr)
+	if err != nil {
+		log.Error("GetFileNameFromURL, Unable to parse file", zap.Error(err))
+		return "", err
+	}
+
+	// 去除查詢字符串
+	fileName := path.Base(parsedURL.Path)
+
+	// 去掉副檔名後的查詢參數
+	if idx := strings.Index(fileName, "?"); idx != -1 {
+		fileName = fileName[:idx]
+	}
+
+	return fileName, nil
+}
+
+// DownloadFileFromUrl
+// 從網路連結下載檔案
+func DownloadFileFromUrl(url string) ([]byte, error) {
+	// 發送 HTTP GET 請求以獲取圖片
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Error("DownloadFileFromUrl, failed to download image", zap.Error(err))
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	// 讀取圖片數據
+	imgData, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Error("DownloadFileFromUrl, failed to read image data", zap.Error(err))
+		return nil, err
+	}
+
+	return imgData, nil
 }

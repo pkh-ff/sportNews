@@ -8,6 +8,24 @@ import (
 	"xorm.io/xorm"
 )
 
+// GetNoCoverNews
+// 取得還沒有同步封面新聞列表
+func (repo *Repository) GetNoCoverNews() ([]model.News, error) {
+	log.Info("GetNoCoverNews: Start fetching news")
+
+	limit := 500
+	sess := repo.db.Where("status = ?", enum.Enable).And("cover IS NULL OR cover = ?", "")
+	var news = make([]model.News, 0)
+	err := sess.OrderBy("pub_date DESC").Limit(limit).Find(&news)
+	if err != nil {
+		log.Error("GetNoCoverNews: Failed to fetch news", zap.Int("limit", limit), zap.Error(err))
+		return nil, err
+	}
+
+	log.Info("QueryNewsByPage: Successfully fetched news", zap.Int("newsCount", len(news)))
+	return news, nil
+}
+
 // QueryNewsByPage
 // 分頁取得新聞列表
 func (repo *Repository) QueryNewsByPage(limit, start int) ([]model.News, error) {
@@ -78,6 +96,19 @@ func (repo *Repository) InsertNews(m model.News) error {
 	}
 
 	log.Info("InsertNews: Successfully inserted news", zap.Any("news", m))
+	return nil
+}
+
+// UpdateNews
+// 更新DB中新聞資料
+func (repo *Repository) UpdateNews(m model.News) error {
+	log.Info("UpdateNews: Start updating news", zap.Any("news", m))
+	_, err := repo.db.ID(m.Id).Update(&m)
+	if err != nil {
+		log.Error("UpdateNews,  Failed to update news", zap.Int32("id", m.Id), zap.Error(err))
+		return err
+	}
+
 	return nil
 }
 

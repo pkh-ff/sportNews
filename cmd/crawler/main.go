@@ -3,11 +3,13 @@ package main
 import (
 	"context"
 	"flag"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	_ "github.com/go-sql-driver/mysql"
 	"go.uber.org/zap"
 	"os"
 	"os/signal"
 	"sportNews/conf"
+	"sportNews/conf/aws"
 	"sportNews/conf/database"
 	"sportNews/internal/process"
 	"sportNews/pkg/log"
@@ -42,27 +44,34 @@ func main() {
 		log.Error("init database", zap.Error(err))
 	}
 
+	s3Client, err := aws.New(config.Aws)
+
 	// set log config
 	log.InitLogger(config.App.Debug)
 
-	crawlerProcess(config.App, db)
+	crawlerProcess(*config, db, s3Client)
 
 	shutdown(config, db)
 	wg.Wait()
 }
 
-func crawlerProcess(conf conf.App, db *xorm.EngineGroup) {
-	wg.Add(2)
-	wgCount = 2
+func crawlerProcess(conf conf.Conf, db *xorm.EngineGroup, s3Client *s3.Client) {
+	wg.Add(3)
+	wgCount = 3
 
 	go func() {
 		defer wg.Done()
-		process.NDTVProcess(conf, db)
+		process.NDTVProcess(conf.App, db)
 	}()
 
 	go func() {
 		defer wg.Done()
-		process.BCCIProcess(conf, db)
+		process.BCCIProcess(conf.App, db)
+	}()
+
+	go func() {
+		defer wg.Done()
+		process.PictureSyncProcess(conf, s3Client, db)
 	}()
 }
 

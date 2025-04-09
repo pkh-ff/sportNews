@@ -1,6 +1,7 @@
 package process
 
 import (
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"go.uber.org/zap"
 	"sportNews/conf"
 	"sportNews/internal/service/crawler"
@@ -31,5 +32,15 @@ func BCCIProcess(conf conf.App, db *xorm.EngineGroup) {
 		serv.Crawler()
 
 		time.Sleep(time.Duration(conf.Process.Ranking) * time.Second)
+	}
+}
+
+func PictureSyncProcess(conf conf.Conf, s3Client *s3.Client, db *xorm.EngineGroup) {
+	serv := crawler.NewStoryFile(db, s3Client, conf.Aws.Bucket)
+	for {
+		log.Info("PictureSyncProcess: Starting sync news cover", zap.Time("startTime", time.Now()))
+		serv.StoryNewsCover()
+
+		time.Sleep(time.Duration(conf.App.Process.SyncPicture) * time.Second)
 	}
 }
