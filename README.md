@@ -168,6 +168,7 @@ make run SERVICE=crawler-server VERSION=0.0.1
 | APP_DEBUG           | 是否啟用debug模式          |
 | APP_PROCESS_NEWS    | 新聞爬蟲執行間格時間(秒)        |
 | APP_PROCESS_RANKING | 爬行榜爬蟲執行間格時間(秒)       |
+| APP_PROCESS_PICTURE | 同步新聞封面圖片間格時間(秒)      |
 | DB_MASTER_HOST      | 主資料庫 連線 Host address |
 | DB_MASTER_USERNAME  | 主資料庫 帳號              |
 | DB_MASTER_PASSWORD  | 主資料庫 密碼              |
