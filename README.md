@@ -8,11 +8,14 @@ API服務
 
 爬蟲服務，透過常駐程序的方式，定期去爬取資料，預設爬取時間區間如下
 
-News：2小時執行一次，依上次執行時間來決定下次執行時間
+新聞爬蟲：爬取[https://sports.ndtv.com/cricket/news](https://sports.ndtv.com/cricket/news)資料，預設每2小時執行一次。
 
-Rank：12小時執行一次，依上次執行時間來決定下次執行時間
+爬行榜爬蟲：爬取[https://www.bcci.tv/international/men/rankings](https://www.bcci.tv/international/men/rankings)資料，預設每12小時執行一次。
 
-> 爬取時間區間可以透過[服務參數](#服務參數)中的`PROCESS_NEWS`與`PROCESS_RANKING`分別進行設定
+新聞圖片同步：將存在DB中的新聞封面進行轉存動作，預設每30分鐘執行一次。
+
+> 1. 爬取時間區間可以透過[服務參數](#服務參數)中的`PROCESS_NEWS`與`PROCESS_RANKING`分別進行設定
+> 2. 下次執行時間是根據依上次執行時間來決定
 
 ## Development Guide
 
