@@ -11,6 +11,7 @@ type News struct {
 	Description string      `xorm:"description"`
 	Cover       string      `xorm:"cover"`
 	CoverSource string      `xorm:"cover_source"`
+	CoverCustom string      `xorm:"cover_custom"`
 	Link        string      `xorm:"link"`
 	Content     string      `xorm:"content"`
 	Source      string      `xomr:"source"`

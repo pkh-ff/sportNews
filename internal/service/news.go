@@ -22,12 +22,17 @@ func (s *Serv) QueryNews(page, size int) (api.NewsPageResp, error) {
 
 	data := make([]api.NewsList, 0)
 	for _, v := range news {
+		if v.CoverCustom == "" {
+			v.CoverCustom = assets.FullPath(v.Cover)
+		}
+
 		data = append(data, api.NewsList{
 			Id:          v.Id,
 			Title:       v.Title,
 			Description: v.Description,
 			Cover:       assets.FullPath(v.Cover),
 			CoverSource: v.CoverSource,
+			CoverCustom: v.CoverCustom,
 			PubDate:     v.PubDate,
 		})
 	}
@@ -66,10 +71,15 @@ func (s *Serv) FindNews(id int) (api.NewsDetail, error) {
 	re := regexp.MustCompile(`https?://[^\s]+`) // 匹配任何以 http:// 或 https:// 開頭，後面接著不是空白字元（[^\s]）的一串文字
 	content := re.ReplaceAllString(data.Content, "")
 
+	if data.CoverCustom == "" {
+		data.CoverCustom = assets.FullPath(data.Cover)
+	}
+
 	return api.NewsDetail{
 		Title:       data.Title,
 		Cover:       assets.FullPath(data.Cover),
 		CoverSource: data.CoverSource,
+		CoverCustom: data.CoverCustom,
 		Description: data.Description,
 		Content:     content,
 		PubDate:     data.PubDate,

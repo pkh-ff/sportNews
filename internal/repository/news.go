@@ -30,7 +30,7 @@ func (repo *Repository) GetNoCoverNews() ([]model.News, error) {
 // 分頁取得新聞列表
 func (repo *Repository) QueryNewsByPage(limit, start int) ([]model.News, error) {
 	log.Info("QueryNewsByPage: Start fetching news", zap.Int("limit", limit), zap.Int("start", start))
-	cols := []string{"id", "title", "description", "cover", "cover_source", "pub_date"}
+	cols := []string{"id", "title", "description", "cover", "cover_source", "cover_custom", "pub_date"}
 	sess := repo.queryNews(cols)
 
 	var news = make([]model.News, 0)
@@ -65,7 +65,7 @@ func (repo *Repository) QueryNewsCount() (int64, error) {
 // 取得新聞詳情
 func (repo *Repository) FindNews(id int) (model.News, error) {
 	log.Info("FindNews: Start fetching news details", zap.Int("id", id))
-	cols := []string{"title", "description", "cover", "cover_source", "content", "pub_date"}
+	cols := []string{"title", "description", "cover", "cover_source", "cover_custom", "content", "pub_date"}
 	sess := repo.db.Cols(cols...)
 	sess.Where("id = ?", id).And("status = ?", enum.Enable)
 

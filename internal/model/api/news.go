@@ -14,6 +14,7 @@ type NewsList struct {
 	Description string    `json:"description"`
 	Cover       string    `json:"cover"`
 	CoverSource string    `json:"coverSource"`
+	CoverCustom string    `json:"coverCustom"`
 	PubDate     time.Time `json:"pubDate"`
 }
 
@@ -22,6 +23,7 @@ type NewsDetail struct {
 	Description string    `json:"description"`
 	Cover       string    `json:"cover"`
 	CoverSource string    `json:"coverSource"`
+	CoverCustom string    `json:"coverCustom"`
 	Content     string    `json:"content"`
 	PubDate     time.Time `json:"pubDate"`
 }
