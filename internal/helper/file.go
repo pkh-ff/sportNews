@@ -77,7 +77,7 @@ func DownloadFileFromUrl(url string) ([]byte, error) {
 	}
 	defer resp.Body.Close()
 
-	// 讀取圖片數據
+	// 讀取檔案數據
 	imgData, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Error("DownloadFileFromUrl, failed to read image data", zap.Error(err))
@@ -85,4 +85,17 @@ func DownloadFileFromUrl(url string) ([]byte, error) {
 	}
 
 	return imgData, nil
+}
+
+// FileURLExists
+// 透過http status來判斷網路上檔案是否存在
+func FileURLExists(url string) (bool, error) {
+	resp, err := http.Head(url)
+	if err != nil {
+		log.Error("FileURLExists: failed to perform HEAD request", zap.String("url", url), zap.Error(err))
+		return false, err
+	}
+	defer resp.Body.Close()
+
+	return resp.StatusCode == http.StatusOK, nil
 }

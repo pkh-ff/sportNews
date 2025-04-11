@@ -1,7 +1,6 @@
 package assets
 
 import (
-	"fmt"
 	"net/url"
 	"strings"
 )
@@ -36,15 +35,13 @@ func FullAssetsPath(p string) string {
 // FullAssets2Path
 // assets 2完整連結
 func FullAssets2Path(p string) string {
-	fmt.Println("ssss:" + p)
 	if p == "" {
 		return ""
 	}
 	// 如果 p 是完整的 URL，則直接返回
 	if u, err := url.ParseRequestURI(p); err == nil && u.Scheme != "" {
-		fmt.Println(p)
 		return p
 	}
-	fmt.Println(assets2Path)
+
 	return strings.TrimRight(assets2Path, "/") + "/" + strings.TrimLeft(p, "/")
 }

@@ -42,8 +42,8 @@ func TestProcessConfNew(t *testing.T) {
 			},
 		},
 		DB:      newDBConf("sport_news"),
-		Assets:  "",
-		Assets2: "",
+		Assets:  "http://assets.localhost",
+		Assets2: "http://assets2.localhost",
 	}
 
 	assert.Nil(t, err)

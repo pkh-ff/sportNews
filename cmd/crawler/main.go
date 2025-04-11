@@ -11,9 +11,11 @@ import (
 	"sportNews/conf"
 	"sportNews/conf/aws"
 	"sportNews/conf/database"
+	"sportNews/internal/assets"
 	"sportNews/internal/process"
 	"sportNews/pkg/log"
 	"sync"
+	"sync/atomic"
 	"syscall"
 	"time"
 	"xorm.io/xorm"
@@ -22,14 +24,14 @@ import (
 var (
 	confPath string // config path
 	wg       sync.WaitGroup
-	wgCount  int
+	wgCount  int32
 )
 
 func main() {
 	flag.StringVar(&confPath, "c", "process.conf.yaml", "default config path")
 	flag.Parse()
 
-	//ctx := context.Background()
+	ctx := context.Background()
 	config, err := conf.New(confPath)
 	if err != nil {
 		log.Error("setting conf", zap.Error(err))
@@ -44,34 +46,57 @@ func main() {
 		log.Error("init database", zap.Error(err))
 	}
 
+	assets.Setup(config.Assets, config.Assets2)
+
 	s3Client, err := aws.New(config.Aws)
 
 	// set log config
 	log.InitLogger(config.App.Debug)
 
-	crawlerProcess(*config, db, s3Client)
+	crawlerProcess(ctx, *config, db, s3Client)
 
 	shutdown(config, db)
 	wg.Wait()
 }
 
-func crawlerProcess(conf conf.Conf, db *xorm.EngineGroup, s3Client *s3.Client) {
-	wg.Add(3)
-	wgCount = 3
-
+func crawlerProcess(ctx context.Context, conf conf.Conf, db *xorm.EngineGroup, s3Client *s3.Client) {
+	wg.Add(1)
+	atomic.AddInt32(&wgCount, 1)
 	go func() {
 		defer wg.Done()
-		process.NDTVProcess(conf.App, db)
+		select {
+		case <-ctx.Done():
+			log.Info("NDTVProcess cancelled")
+			return
+		default:
+			process.NDTVProcess(conf.App, db)
+		}
+	}()
+	
+	wg.Add(1)
+	atomic.AddInt32(&wgCount, 1)
+	go func() {
+		defer wg.Done()
+		select {
+		case <-ctx.Done():
+			log.Info("BCCIProcess cancelled")
+			return
+		default:
+			process.BCCIProcess(conf.App, db)
+		}
 	}()
 
+	wg.Add(1)
+	atomic.AddInt32(&wgCount, 1)
 	go func() {
 		defer wg.Done()
-		process.BCCIProcess(conf.App, db)
-	}()
-
-	go func() {
-		defer wg.Done()
-		process.PictureSyncProcess(conf, s3Client, db)
+		select {
+		case <-ctx.Done():
+			log.Info("PictureSyncProcess cancelled")
+			return
+		default:
+			process.PictureSyncProcess(conf, s3Client, db)
+		}
 	}()
 }
 
@@ -84,10 +109,13 @@ func shutdown(config *conf.Conf, db *xorm.EngineGroup) {
 	_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	db.Close()
+	db.Close() // 關閉資料庫
 
-	for i := 0; i < wgCount; i++ {
-		wg.Done()
+	cancel() // 發送取消信號
+
+	log.Info("Waiting for goroutines to finish...")
+	for i := int32(0); i < atomic.LoadInt32(&wgCount); i++ {
+		wg.Done() // 確保所有 goroutine 都完成
 	}
 
 	log.Infof("service shutdown", "%s Server is exit", config.App.Name)

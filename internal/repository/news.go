@@ -22,7 +22,47 @@ func (repo *Repository) GetNoCoverNews() ([]model.News, error) {
 		return nil, err
 	}
 
-	log.Info("QueryNewsByPage: Successfully fetched news", zap.Int("newsCount", len(news)))
+	log.Info("GetNoCoverNews: Successfully fetched news", zap.Int("newsCount", len(news)))
+	return news, nil
+}
+
+// GetNoCoverCustomNews
+// 取得還沒有設置自定義封面新聞列表
+func (repo *Repository) GetNoCoverCustomNews() ([]model.News, error) {
+	log.Info("GetNoCoverCustomNews: Start fetching news")
+
+	limit := 500
+	sess := repo.db.Where("status = ?", enum.Enable).And("cover_custom IS NULL OR cover_custom = ?", "")
+	var news = make([]model.News, 0)
+	err := sess.OrderBy("update_at DESC, id DESC").Limit(limit).Find(&news)
+	if err != nil {
+		log.Error("GetNoCoverCustomNews: Failed to fetch news", zap.Int("limit", limit), zap.Error(err))
+		return nil, err
+	}
+
+	log.Info("GetNoCoverCustomNews: Successfully fetched news", zap.Int("newsCount", len(news)))
+	return news, nil
+}
+
+// GetLastUpdateCoverCustomNews
+// 取得最後更新cover_custom欄位資料
+func (repo *Repository) GetLastUpdateCoverCustomNews() (model.News, error) {
+	log.Info("GetLastUpdateCoverCustomNews: Start fetching news")
+	var news model.News
+	found, err := repo.db.Cols("cover_custom").
+		Where("status = ?", enum.Enable).
+		And("cover_custom IS NOT NULL").
+		And("cover_custom != ?", "").
+		OrderBy("update_at DESC, id DESC").Limit(1).Get(&news)
+	if err != nil {
+		return model.News{}, err
+	}
+
+	if !found {
+		log.Warn("FindNews: News not found")
+		return news, nil
+	}
+
 	return news, nil
 }
 
