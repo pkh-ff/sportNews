@@ -45,7 +45,7 @@ func main() {
 		log.Fatal("Failed to initialize database", zap.Error(err))
 	}
 
-	assets.Setup(config.Assets)
+	assets.Setup(config.Assets, config.Assets2)
 
 	serv := api.New(ctx, &config.App, db)
 	serv.Run()

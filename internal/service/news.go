@@ -21,16 +21,19 @@ func (s *Serv) QueryNews(page, size int) (api.NewsPageResp, error) {
 	log.Info("QueryNews: News fetched successfully", zap.Int("newsCount", len(news)))
 
 	data := make([]api.NewsList, 0)
+
 	for _, v := range news {
 		if v.CoverCustom == "" {
-			v.CoverCustom = assets.FullPath(v.Cover)
+			v.CoverCustom = assets.FullAssetsPath(v.Cover)
+		} else {
+			v.CoverCustom = assets.FullAssets2Path(v.CoverCustom)
 		}
 
 		data = append(data, api.NewsList{
 			Id:          v.Id,
 			Title:       v.Title,
 			Description: v.Description,
-			Cover:       assets.FullPath(v.Cover),
+			Cover:       assets.FullAssetsPath(v.Cover),
 			CoverSource: v.CoverSource,
 			CoverCustom: v.CoverCustom,
 			PubDate:     v.PubDate,
@@ -72,12 +75,14 @@ func (s *Serv) FindNews(id int) (api.NewsDetail, error) {
 	content := re.ReplaceAllString(data.Content, "")
 
 	if data.CoverCustom == "" {
-		data.CoverCustom = assets.FullPath(data.Cover)
+		data.CoverCustom = assets.FullAssetsPath(data.Cover)
+	} else {
+		data.CoverCustom = assets.FullAssets2Path(data.CoverCustom)
 	}
 
 	return api.NewsDetail{
 		Title:       data.Title,
-		Cover:       assets.FullPath(data.Cover),
+		Cover:       assets.FullAssetsPath(data.Cover),
 		CoverSource: data.CoverSource,
 		CoverCustom: data.CoverCustom,
 		Description: data.Description,

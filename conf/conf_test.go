@@ -18,8 +18,9 @@ func TestAppConfNew(t *testing.T) {
 			ReadTimeout:  "10s",
 			WriteTimeout: "10s",
 		},
-		DB:     newDBConf("sport_news"),
-		Assets: "http://assets.localhost",
+		DB:      newDBConf("sport_news"),
+		Assets:  "http://assets.localhost",
+		Assets2: "http://assets2.localhost",
 	}
 
 	assert.Nil(t, err)
@@ -40,8 +41,9 @@ func TestProcessConfNew(t *testing.T) {
 				SyncPicture: 1800,
 			},
 		},
-		DB:     newDBConf("sport_news"),
-		Assets: "",
+		DB:      newDBConf("sport_news"),
+		Assets:  "",
+		Assets2: "",
 	}
 
 	assert.Nil(t, err)

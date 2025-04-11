@@ -1,21 +1,26 @@
 package assets
 
 import (
+	"fmt"
 	"net/url"
 	"strings"
 )
 
 var assetsPath = ""
+var assets2Path = ""
 
 func init() {
 
 }
 
-func Setup(assets string) {
+func Setup(assets, assets2 string) {
 	assetsPath = assets
+	assets2Path = assets2
 }
 
-func FullPath(p string) string {
+// FullAssetsPath
+// assets 1完整連結
+func FullAssetsPath(p string) string {
 	if p == "" {
 		return ""
 	}
@@ -26,4 +31,20 @@ func FullPath(p string) string {
 	}
 
 	return strings.TrimRight(assetsPath, "/") + "/" + strings.TrimLeft(p, "/")
+}
+
+// FullAssets2Path
+// assets 2完整連結
+func FullAssets2Path(p string) string {
+	fmt.Println("ssss:" + p)
+	if p == "" {
+		return ""
+	}
+	// 如果 p 是完整的 URL，則直接返回
+	if u, err := url.ParseRequestURI(p); err == nil && u.Scheme != "" {
+		fmt.Println(p)
+		return p
+	}
+	fmt.Println(assets2Path)
+	return strings.TrimRight(assets2Path, "/") + "/" + strings.TrimLeft(p, "/")
 }
