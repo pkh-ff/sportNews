@@ -2,6 +2,7 @@ package service
 
 import (
 	"go.uber.org/zap"
+	"sportNews/internal/assets"
 	"sportNews/internal/model/api"
 	"sportNews/pkg/log"
 )
@@ -22,8 +23,8 @@ func (s *Serv) GetVideoList() (interface{}, error) {
 		data = append(data, api.VideoResp{
 			Title:       v.Title,
 			Description: v.Description,
-			Cover:       v.Cover,
-			Link:        v.Link,
+			Cover:       assets.FullAssets2Path(v.Cover),
+			Link:        assets.FullAssets2Path(v.Link),
 		})
 	}
 	log.Info("GetVideoList: Video data transformed into API response", zap.Int("videoDataCount", len(data)))
