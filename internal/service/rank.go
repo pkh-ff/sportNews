@@ -3,6 +3,7 @@ package service
 import (
 	"encoding/json"
 	"go.uber.org/zap"
+	"sportNews/internal/assets"
 	"sportNews/internal/enum"
 	"sportNews/internal/model"
 	"sportNews/pkg/log"
@@ -34,5 +35,13 @@ func (s *Serv) GetRankData(t enum.RankType) (interface{}, error) {
 	}
 	log.Info("GetRankData: Rank data successfully parsed", zap.String("rankType", string(t)), zap.Int("rankDataCount", len(r)))
 
+	for i := range r {
+		// 暫時作法
+		if r[i].Team == "New Zealand" {
+			r[i].Icon = assets.FullAssets2Path("n8/temp/New_Zealand.png")
+		} else if r[i].Team == "England" {
+			r[i].Icon = assets.FullAssets2Path("n8/temp/England.png")
+		}
+	}
 	return r, nil
 }
