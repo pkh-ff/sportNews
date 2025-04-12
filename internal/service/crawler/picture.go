@@ -1,7 +1,6 @@
 package crawler
 
 import (
-	"fmt"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"go.uber.org/zap"
 	"net/http"
@@ -112,8 +111,7 @@ func (s *StoryFile) SyncCustomNewsCover() {
 		// 遞增圖片序號
 		num++
 		url := assets.FullAssets2Path(getCustomCoverPath(num))
-		fmt.Println(v.Id)
-
+		
 		// 檢查檔案是否存在
 		exist, err := helper.FileURLExists(url)
 
@@ -121,7 +119,6 @@ func (s *StoryFile) SyncCustomNewsCover() {
 			log.Warn("SyncCustomNewsCover, failed to check file existence", zap.String("url", url), zap.Error(err))
 			continue
 		}
-		fmt.Println("aa11")
 
 		if !exist {
 			log.Warn("SyncCustomNewsCover, file not found, resetting num", zap.String("url", url))
