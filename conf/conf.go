@@ -7,11 +7,10 @@ import (
 )
 
 type Conf struct {
-	App     App             `mapstructure:"app"`
-	DB      database.Config `mapstructure:"db"`
-	Assets  string          `mapstructure:"assets"`
-	Assets2 string          `mapstructure:"assets_2"`
-	Aws     Aws             `mapstructure:"aws"`
+	App    App             `mapstructure:"app"`
+	DB     database.Config `mapstructure:"db"`
+	Assets string          `mapstructure:"assets"`
+	Aws    Aws             `mapstructure:"aws"`
 }
 
 type App struct {

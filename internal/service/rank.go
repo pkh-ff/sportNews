@@ -38,9 +38,9 @@ func (s *Serv) GetRankData(t enum.RankType) (interface{}, error) {
 	for i := range r {
 		// 暫時作法
 		if r[i].Team == "New Zealand" {
-			r[i].Icon = assets.FullAssets2Path("n8/temp/New_Zealand.png")
+			r[i].Icon = assets.FullAssetsPath("n8/temp/New_Zealand.png")
 		} else if r[i].Team == "England" {
-			r[i].Icon = assets.FullAssets2Path("n8/temp/England.png")
+			r[i].Icon = assets.FullAssetsPath("n8/temp/England.png")
 		}
 	}
 	return r, nil

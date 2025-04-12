@@ -33,4 +33,3 @@ db:
   max_idle_conns: 2
   max_open_conns: 0
 assets: http://assets.localhost
-assets_2: http://assets2.localhost

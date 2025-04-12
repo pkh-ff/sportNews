@@ -23,8 +23,8 @@ func (s *Serv) GetVideoList() (interface{}, error) {
 		data = append(data, api.VideoResp{
 			Title:       v.Title,
 			Description: v.Description,
-			Cover:       assets.FullAssets2Path(v.Cover),
-			Link:        assets.FullAssets2Path(v.Link),
+			Cover:       assets.FullAssetsPath(v.Cover),
+			Link:        assets.FullAssetsPath(v.Link),
 		})
 	}
 	log.Info("GetVideoList: Video data transformed into API response", zap.Int("videoDataCount", len(data)))

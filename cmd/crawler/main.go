@@ -46,7 +46,7 @@ func main() {
 		log.Error("init database", zap.Error(err))
 	}
 
-	assets.Setup(config.Assets, config.Assets2)
+	assets.Setup(config.Assets)
 
 	s3Client, err := aws.New(config.Aws)
 
@@ -72,7 +72,7 @@ func crawlerProcess(ctx context.Context, conf conf.Conf, db *xorm.EngineGroup, s
 			process.NDTVProcess(conf.App, db)
 		}
 	}()
-	
+
 	wg.Add(1)
 	atomic.AddInt32(&wgCount, 1)
 	go func() {

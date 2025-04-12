@@ -18,9 +18,8 @@ func TestAppConfNew(t *testing.T) {
 			ReadTimeout:  "10s",
 			WriteTimeout: "10s",
 		},
-		DB:      newDBConf("sport_news"),
-		Assets:  "http://assets.localhost",
-		Assets2: "http://assets2.localhost",
+		DB:     newDBConf("sport_news"),
+		Assets: "http://assets.localhost",
 	}
 
 	assert.Nil(t, err)
@@ -48,9 +47,8 @@ func TestProcessConfNew(t *testing.T) {
 			Bucket:    "BUCKET",
 			Acl:       false,
 		},
-		DB:      newDBConf("sport_news"),
-		Assets:  "http://assets.localhost",
-		Assets2: "http://assets2.localhost",
+		DB:     newDBConf("sport_news"),
+		Assets: "http://assets.localhost",
 	}
 
 	assert.Nil(t, err)

@@ -26,7 +26,7 @@ func (s *Serv) QueryNews(page, size int) (api.NewsPageResp, error) {
 		if v.CoverCustom == "" {
 			v.CoverCustom = assets.FullAssetsPath(v.Cover)
 		} else {
-			v.CoverCustom = assets.FullAssets2Path(v.CoverCustom)
+			v.CoverCustom = assets.FullAssetsPath(v.CoverCustom)
 		}
 
 		data = append(data, api.NewsList{
@@ -77,7 +77,7 @@ func (s *Serv) FindNews(id int) (api.NewsDetail, error) {
 	if data.CoverCustom == "" {
 		data.CoverCustom = assets.FullAssetsPath(data.Cover)
 	} else {
-		data.CoverCustom = assets.FullAssets2Path(data.CoverCustom)
+		data.CoverCustom = assets.FullAssetsPath(data.CoverCustom)
 	}
 
 	return api.NewsDetail{

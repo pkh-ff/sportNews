@@ -115,7 +115,7 @@ func (s *StoryFile) SyncCustomNewsCover() {
 	for _, v := range newsList {
 		// 遞增圖片序號
 		num++
-		url := assets.FullAssets2Path(getCustomCoverPath(num))
+		url := assets.FullAssetsPath(getCustomCoverPath(num))
 
 		// 檢查檔案是否存在
 		exist, err := helper.FileURLExists(url)
