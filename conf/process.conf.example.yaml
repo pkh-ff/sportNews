@@ -6,6 +6,13 @@ app:
     ranking: 43200 # 12小時 (60s * 60m *12hr)
     picture: 1800 # 2小時 (60s * 30m)
 
+aws:
+  accessKey: YOUR_ACCESS_KEY
+  secretKey: YOUR_SECRET_KEY
+  region: REGION
+  bucket: BUCKET
+  acl: false
+
 db:
   database: sport_news
   master:

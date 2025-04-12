@@ -41,6 +41,13 @@ func TestProcessConfNew(t *testing.T) {
 				SyncPicture: 1800,
 			},
 		},
+		Aws: Aws{
+			AccessKey: "YOUR_ACCESS_KEY",
+			SecretKey: "YOUR_SECRET_KEY",
+			Region:    "REGION",
+			Bucket:    "BUCKET",
+			Acl:       false,
+		},
 		DB:      newDBConf("sport_news"),
 		Assets:  "http://assets.localhost",
 		Assets2: "http://assets2.localhost",

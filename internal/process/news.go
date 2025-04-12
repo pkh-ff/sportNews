@@ -36,7 +36,7 @@ func BCCIProcess(conf conf.App, db *xorm.EngineGroup) {
 }
 
 func PictureSyncProcess(conf conf.Conf, s3Client *s3.Client, db *xorm.EngineGroup) {
-	serv := crawler.NewStoryFile(db, s3Client, conf.Aws.Bucket)
+	serv := crawler.NewStoryFile(db, s3Client, conf.Aws.Bucket, conf.Aws.Acl)
 	for {
 		log.Info("PictureSyncProcess: Starting sync news cover", zap.Time("startTime", time.Now()))
 		serv.StoryNewsCover()

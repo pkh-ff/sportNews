@@ -17,15 +17,17 @@ type StoryFile struct {
 	Repo     *repository.Repository
 	S3Client *s3.Client
 	Bucket   string
+	Acl      bool
 }
 
-func NewStoryFile(db *xorm.EngineGroup, s3Client *s3.Client, bucket string) *StoryFile {
+func NewStoryFile(db *xorm.EngineGroup, s3Client *s3.Client, bucket string, acl bool) *StoryFile {
 	repo := repository.New(db)
 
 	return &StoryFile{
 		Repo:     &repo,
 		S3Client: s3Client,
 		Bucket:   bucket,
+		Acl:      acl,
 	}
 }
 
@@ -37,6 +39,8 @@ func (s *StoryFile) StoryNewsCover() {
 	s.SyncCustomNewsCover()
 }
 
+// SyncSourceNewsCover
+// 同步&轉存新聞原始封面圖片
 func (s *StoryFile) SyncSourceNewsCover() {
 	// 取得沒有封面的新聞
 	news, err := s.Repo.GetNoCoverNews()
@@ -58,9 +62,9 @@ func (s *StoryFile) SyncSourceNewsCover() {
 			continue
 		}
 		contentType := http.DetectContentType(imgData)
-		objectKey := "sport-news/news/" + filename
+		objectKey := helper.NewsCoverPrefix + filename
 
-		err = helper.UploadToS3(s.S3Client, imgData, s.Bucket, objectKey, contentType)
+		err = helper.UploadToS3(s.S3Client, imgData, s.Bucket, objectKey, contentType, s.Acl)
 		if err != nil {
 			log.Error("StoryNewsCover, upload fil to s3 fail", zap.String("url", v.CoverSource), zap.Error(err))
 			continue
@@ -72,6 +76,7 @@ func (s *StoryFile) SyncSourceNewsCover() {
 			log.Error("StoryNewsCover, update news data fail", zap.Int32("news", v.Id), zap.Error(err))
 			continue
 		}
+		break
 	}
 }
 
@@ -111,7 +116,7 @@ func (s *StoryFile) SyncCustomNewsCover() {
 		// 遞增圖片序號
 		num++
 		url := assets.FullAssets2Path(getCustomCoverPath(num))
-		
+
 		// 檢查檔案是否存在
 		exist, err := helper.FileURLExists(url)
 
@@ -138,5 +143,5 @@ func (s *StoryFile) SyncCustomNewsCover() {
 }
 
 func getCustomCoverPath(num int) string {
-	return "/n8/news/sport" + strconv.Itoa(num) + ".png"
+	return "/" + helper.NewsCustomCoverPrefix + strconv.Itoa(num) + ".png"
 }

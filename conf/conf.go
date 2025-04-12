@@ -28,6 +28,7 @@ type Aws struct {
 	SecretKey string `mapstructure:"secretkey"`
 	Bucket    string `mapstructure:"bucket"`
 	Region    string `mapstructure:"region"`
+	Acl       bool   `mapstructure:"acl"`
 }
 
 type Process struct {
