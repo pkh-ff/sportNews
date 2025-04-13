@@ -3,8 +3,10 @@ package crawler
 import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"go.uber.org/zap"
 	"net/http"
+	"sportNews/internal/assets"
 	"sportNews/internal/enum"
 	"sportNews/internal/helper"
 	"sportNews/internal/model"
@@ -15,15 +17,21 @@ import (
 )
 
 type BCCIServ struct {
-	Serv   *Serv
-	Source string
-	Domain string
+	Serv     *Serv
+	Source   string
+	Domain   string
+	S3Client *s3.Client
+	Bucket   string
+	Acl      bool
 }
 
-func NewBCCIServ(db *xorm.EngineGroup) *BCCIServ {
+func NewBCCIServ(db *xorm.EngineGroup, s3Client *s3.Client, bucket string, acl bool) *BCCIServ {
 	return &BCCIServ{
-		Serv:   newServ(db, "bcci"),
-		Domain: "https://sports.ndtv.com",
+		Serv:     newServ(db, "bcci"),
+		Domain:   "https://sports.ndtv.com",
+		S3Client: s3Client,
+		Bucket:   bucket,
+		Acl:      acl,
 	}
 }
 
@@ -54,7 +62,6 @@ func (s *BCCIServ) rank(t enum.RankType) []model.RankDetail {
 		return nil
 	}
 
-	//fmt.Println(doc.Html())
 	data := make([]model.RankDetail, 0)
 
 	// rank 1
@@ -67,7 +74,53 @@ func (s *BCCIServ) rank(t enum.RankType) []model.RankDetail {
 	ranks := getRankOtherData(rOther)
 	data = append(data, ranks...)
 
+	s.replaceTeamIcon(&data)
+
 	return data
+}
+
+func (s *BCCIServ) replaceTeamIcon(data *[]model.RankDetail) {
+	for i := 0; i < len(*data); i++ {
+		// 檢查檔案是否存在
+		ext, err := helper.GetFileExtensionFromURL((*data)[i].Icon)
+		if err != nil {
+			log.Error("replaceTeamIcon, Unable to get file extension", zap.String("url", (*data)[i].Icon), zap.Error(err))
+			continue
+		}
+
+		url := assets.FullAssetsPath(getTeamIconPath((*data)[i].Team, ext))
+
+		exist, err := helper.FileURLExists(url)
+		if err != nil {
+			log.Warn("replaceTeamIcon, failed to check file existence", zap.String("url", url), zap.Error(err))
+			continue
+		}
+
+		objectKey := helper.TeamIconPrefix + (*data)[i].Team + ext
+		// 檢查檔案是否存在serve上，反判斷後續要不要處理檔案上傳
+		if exist {
+			log.Info("replaceTeamIcon, file is existence", zap.String("url", url))
+			(*data)[i].Icon = "/" + objectKey
+			continue
+		}
+
+		//
+		// update file to s3
+		//
+		imgData, err := helper.DownloadFileFromUrl((*data)[i].Icon)
+		if err != nil {
+			log.Error("StoryNewsCover, Unable to get file name", zap.Error(err))
+			continue
+		}
+
+		err = helper.UploadToS3(s.S3Client, imgData, s.Bucket, objectKey, http.DetectContentType(imgData), s.Acl)
+		if err != nil {
+			log.Error("StoryNewsCover, upload fil to s3 fail", zap.String("url", (*data)[i].Icon), zap.Error(err))
+			continue
+		}
+
+		(*data)[i].Icon = "/" + objectKey
+	}
 }
 
 // 取得第一名資料
@@ -171,4 +224,8 @@ func getRankOtherData(s *goquery.Selection) []model.RankDetail {
 	})
 
 	return data
+}
+
+func getTeamIconPath(fileName, ext string) string {
+	return "/" + helper.TeamIconPrefix + fileName + ext
 }

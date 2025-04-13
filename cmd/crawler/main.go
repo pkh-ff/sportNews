@@ -82,7 +82,7 @@ func crawlerProcess(ctx context.Context, conf conf.Conf, db *xorm.EngineGroup, s
 			log.Info("BCCIProcess cancelled")
 			return
 		default:
-			process.BCCIProcess(conf.App, db)
+			process.BCCIProcess(conf, s3Client, db)
 		}
 	}()
 

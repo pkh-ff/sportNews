@@ -25,13 +25,13 @@ func NDTVProcess(conf conf.App, db *xorm.EngineGroup) {
 
 }
 
-func BCCIProcess(conf conf.App, db *xorm.EngineGroup) {
-	serv := crawler.NewBCCIServ(db)
+func BCCIProcess(conf conf.Conf, s3Client *s3.Client, db *xorm.EngineGroup) {
+	serv := crawler.NewBCCIServ(db, s3Client, conf.Aws.Bucket, conf.Aws.Acl)
 	for {
 		log.Info("BCCIProcess: Starting BCCI crawler", zap.Time("startTime", time.Now()))
 		serv.Crawler()
 
-		time.Sleep(time.Duration(conf.Process.Ranking) * time.Second)
+		time.Sleep(time.Duration(conf.App.Process.Ranking) * time.Second)
 	}
 }
 

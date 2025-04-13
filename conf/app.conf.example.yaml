@@ -4,7 +4,6 @@ app:
   debug: true
   read_timeout: 10s
   write_timeout: 10s
-
 db:
   database: sport_news
   master:
@@ -24,8 +23,4 @@ db:
   conn_max_lifetime: 0s
   max_idle_conns: 2
   max_open_conns: 0
-
-api:
-  rapidash: https://rapidash.localhost
-
 assets: http://assets.localhost

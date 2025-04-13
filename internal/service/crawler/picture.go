@@ -119,7 +119,6 @@ func (s *StoryFile) SyncCustomNewsCover() {
 
 		// 檢查檔案是否存在
 		exist, err := helper.FileURLExists(url)
-
 		if err != nil {
 			log.Warn("SyncCustomNewsCover, failed to check file existence", zap.String("url", url), zap.Error(err))
 			continue

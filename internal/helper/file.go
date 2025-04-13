@@ -99,3 +99,18 @@ func FileURLExists(url string) (bool, error) {
 
 	return resp.StatusCode == http.StatusOK, nil
 }
+
+// GetFileExtensionFromURL
+// 從URL路徑中取得副檔名
+func GetFileExtensionFromURL(urlStr string) (string, error) {
+	u, err := url.Parse(urlStr)
+	if err != nil {
+		log.Error("GetFileExtensionFromURL, Unable to parse file", zap.Error(err))
+		return "", err
+	}
+
+	// 取副檔名
+	ext := path.Ext(u.Path) // 只看 Path 部分
+
+	return ext, nil
+}
