@@ -42,23 +42,24 @@ func (s *StoryFile) StoryNewsCover() {
 // SyncSourceNewsCover
 // 同步&轉存新聞原始封面圖片
 func (s *StoryFile) SyncSourceNewsCover() {
+	log.Info("SyncSourceNewsCover: Starting sync source news cover to s3")
 	// 取得沒有封面的新聞
 	news, err := s.Repo.GetNoCoverNews()
 	if err != nil {
-		log.Error("StoryNewsCover, Get News for no cover fail", zap.Error(err))
+		log.Error("SyncSourceNewsCover, Get News for no cover fail", zap.Error(err))
 		return
 	}
 
 	for _, v := range news {
 		filename, err := helper.GetFileNameFromURL(v.CoverSource)
 		if err != nil {
-			log.Error("StoryNewsCover, Unable to get file name", zap.Error(err))
+			log.Error("SyncSourceNewsCover, Unable to get file name", zap.Error(err))
 			continue
 		}
 
 		imgData, err := helper.DownloadFileFromUrl(v.CoverSource)
 		if err != nil {
-			log.Error("StoryNewsCover, Unable download get file", zap.Error(err))
+			log.Error("SyncSourceNewsCover, Unable download get file", zap.Error(err))
 			continue
 		}
 		contentType := http.DetectContentType(imgData)
@@ -66,21 +67,22 @@ func (s *StoryFile) SyncSourceNewsCover() {
 
 		err = helper.UploadToS3(s.S3Client, imgData, s.Bucket, objectKey, contentType, s.Acl)
 		if err != nil {
-			log.Error("StoryNewsCover, upload fil to s3 fail", zap.String("url", v.CoverSource), zap.Error(err))
+			log.Error("SyncSourceNewsCover, upload fil to s3 fail", zap.String("url", v.CoverSource), zap.Error(err))
 			continue
 		}
 
 		v.Cover = "/" + objectKey
 		err = s.Repo.UpdateNews(v)
 		if err != nil {
-			log.Error("StoryNewsCover, update news data fail", zap.Int32("news", v.Id), zap.Error(err))
+			log.Error("SyncSourceNewsCover, update news data fail", zap.Int32("news", v.Id), zap.Error(err))
 			continue
 		}
-		break
 	}
 }
 
 func (s *StoryFile) SyncCustomNewsCover() {
+	log.Info("SyncCustomNewsCover: Starting sync custom news cover to s3")
+
 	// 取得沒有自定義封面圖片的新聞
 	newsList, err := s.Repo.GetNoCoverCustomNews()
 	if err != nil {
