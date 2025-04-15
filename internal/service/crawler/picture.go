@@ -142,5 +142,5 @@ func (s *StoryFile) SyncCustomNewsCover() {
 }
 
 func getCustomCoverPath(num int) string {
-	return "/" + helper.NewsCustomCoverPrefix + strconv.Itoa(num) + ".png"
+	return "/" + helper.NewsCustomCoverPrefix + "sport" + strconv.Itoa(num) + ".png"
 }
