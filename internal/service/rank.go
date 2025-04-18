@@ -36,6 +36,8 @@ func (s *Serv) GetRankData(t enum.RankType) (interface{}, error) {
 	log.Info("GetRankData: Rank data successfully parsed", zap.String("rankType", string(t)), zap.Int("rankDataCount", len(r)))
 
 	for i := range r {
+		r[i].Icon = assets.FullAssetsPath(r[i].Icon)
+
 		// 暫時作法
 		if r[i].Team == "New Zealand" {
 			r[i].Icon = assets.FullAssetsPath("n8/temp/New_Zealand.png")

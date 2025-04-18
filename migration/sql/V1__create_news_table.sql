@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS `news` (
   `description` varchar(255) COLLATE utf8mb4_general_ci NOT NULL COMMENT '描述',
   `cover` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '封面',
   `cover_source` varchar(255) COLLATE utf8mb4_general_ci NOT NULL COMMENT '原始封面連結',
-  `cover_custom` varchar(255) COLLATE utf8mb4_general_ci NOT NULL COMMENT '自定義封面',
+  `cover_custom` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '自定義封面',
   `link` varchar(255) COLLATE utf8mb4_general_ci NOT NULL COMMENT '新聞連結',
   `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '內文',
   `status` tinyint NOT NULL DEFAULT '1' COMMENT '狀態，上架:1、下架:0',
