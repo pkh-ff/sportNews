@@ -136,6 +136,10 @@ make run SERVICE=crawler-server VERSION=0.0.1
 
 > 如果不使用make去執行，可以從[`makefile`](./makefile)檔案對照要執行命令去查看相關指令
 
+## API Doc
+
+使用postman將下面三個檔案[dev_environment.json](./docs/api/sport-news-dev.postman_environment.json)、[local_environment.json](./docs/api/sport-news-local.postman_environment.json)、[prod_environment.json](./docs/api/sport-news-prod.postman_environment.json)、[api_collection.json](./docs/api/SportNews.postman_collection.json)匯入，然後再根據要使用需求去指定postman使用環境變數設定黨。
+
 ## Other
 
 ### 環境變數&服務參數

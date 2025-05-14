@@ -1,0 +1,453 @@
+{
+	"info": {
+		"_postman_id": "6b6bff6e-d031-491c-90b0-21312580e5fc",
+		"name": "SportNews",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37842042",
+		"_collection_link": "https://dark-zodiac-844516.postman.co/workspace/FF~e2029d1a-8cb1-4ddb-8649-2e6d72d672d2/collection/37842042-6b6bff6e-d031-491c-90b0-21312580e5fc?action=share&source=collection_link&creator=37842042"
+	},
+	"item": [
+		{
+			"name": "心跳",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_url}}/healthz",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"healthz"
+					]
+				},
+				"description": "## Describe\n\nhealthz"
+			},
+			"response": []
+		},
+		{
+			"name": "新聞列表",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_url}}/news?page=1&size=15",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"news"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1",
+							"description": "頁數"
+						},
+						{
+							"key": "size",
+							"value": "15",
+							"description": "筆數"
+						}
+					]
+				},
+				"description": "## Describe\n\n分頁方式取得新聞列表\n\n## Router\n\n/news\n\n## Query String\n\n| **參數** | **說明** |\n| --- | --- |\n| page | 頁數 |\n| size | 筆數 |\n\n## Response\n\n| **欄位** | 型態 | **說明** |\n| --- | --- | --- |\n| records | \\[\\]News | 新聞資料列表 |\n| totalCount | int | 總筆數 |\n| totalPage | int | 總頁數 |\n\n### News\n\n| 欄位 | 型態 | **說明** |\n| --- | --- | --- |\n| id | int | 新聞ID |\n| title | String | 標題 |\n| description | String | 描述 |\n| cover | String | 封面 |\n| coverSource | String | 原始封面連結 |\n| pubDate | String | 發布日期(RFC-3339) |"
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:9011/news?page=1&size=10",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9011",
+							"path": [
+								"news"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 26 Mar 2025 01:47:12 GMT"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 0,\n    \"msg\": \"success\",\n    \"data\": {\n        \"records\": [\n            {\n                \"id\": 188,\n                \"title\": \"Hardik Pandya Reprimanded For IPL Code Of Conduct Breach, Handed Hefty Fine\",\n                \"description\": \"This is the first time in IPL 2025 that a captain has received a fine for this reason.\",\n                \"cover\": \"\",\n                \"coverSource\": \"https://c.ndtvimg.com/2025-03/i6itrlf8_hardik-pandya-bcci_625x300_30_March_25.jpg?im=FeatureCrop,alg\",\n                \"pubDate\": \"2025-03-30T00:00:00Z\"\n            },\n            {\n                \"id\": 166,\n                \"title\": \"Scary Visuals: Ball Hits Suryakumar Yadav's Helmet, MI Batter Lies Flat On Ground. Wife Anxious\",\n                \"description\": \"The Gujarat Titans vs Mumbai Indians IPL 2025 match saw a scary moment when a Prasidh Krishna delivery hit Suryakumar Yadav's helmet and the India star looked to be in pain.\",\n                \"cover\": \"\",\n                \"coverSource\": \"https://c.ndtvimg.com/2025-03/cmebvdio_surya_625x300_30_March_25.jpg?im=FitAndFill,algorithm=dnn,wid\",\n                \"pubDate\": \"2025-03-30T00:00:00Z\"\n            },\n            {\n                \"id\": 182,\n                \"title\": \"Shane Warne Death: Police Officer's Shock 'Cover Up' Claim, Says \\\"Powerful Hands Behind All This\\\"\",\n                \"description\": \"A report, quoting a police officer from the site of Shane Warne's death, has claimed that a controversial item was removed on the order of some senior people.\",\n                \"cover\": \"\",\n                \"coverSource\": \"https://c.ndtvimg.com/2025-03/24vbq71o_shane-warne-bcci_625x300_30_March_25.jpg?im=FeatureCrop,algor\",\n                \"pubDate\": \"2025-03-30T00:00:00Z\"\n            },\n            {\n                \"id\": 190,\n                \"title\": \"On Equalling Cristiano Ronaldo's Goal Record At Real Madrid, Kylian Mbappe Says, \\\"We Have To...\\\"\",\n                \"description\": \"Real Madrid striker Kylian Mbappe said it was special to match Cristiano Ronaldo's first season tally of 33 goals for Los Blancos after netting a brace on Saturday against Leganes in La Liga.\",\n                \"cover\": \"\",\n                \"coverSource\": \"https://c.ndtvimg.com/2025-03/j58f7p8_kylian-mbappe-afp_625x300_08_March_25.jpg?im=FeatureCrop,algor\",\n                \"pubDate\": \"2025-03-30T00:00:00Z\"\n            },\n            {\n                \"id\": 191,\n                \"title\": \"Hardik Pandya Faces Heat Over 17-Ball 11 Against GT As Mumbai Indians Lose 2 In A Row\",\n                \"description\": \"Mumbai Indians captain Hardik Pandya was lambasted for 17-ball 11 he scored against the Gujarat Titans while the team was chasing a target of 197.\",\n                \"cover\": \"\",\n                \"coverSource\": \"https://c.ndtvimg.com/2025-03/g77hraoo_hardik-pandya-bcci_625x300_30_March_25.jpg?im=FeatureCrop,alg\",\n                \"pubDate\": \"2025-03-30T00:00:00Z\"\n            },\n            {\n                \"id\": 213,\n                \"title\": \"Watch: Catch Of IPL 2025? Delhi Capitals Star's Brilliant Effort Leaves Everyone Stunned\",\n                \"description\": \"Jake Fraser-McGurk stunned everyone with a brilliant catch for Delhi Capitals during the IPL 2025 match against Sunrisers Hyderabad.\",\n                \"cover\": \"\",\n                \"coverSource\": \"https://c.ndtvimg.com/2025-03/m2tllcg8_cs_625x300_30_March_25.jpeg?im=FeatureCrop,algorithm=dnn,widt\",\n                \"pubDate\": \"2025-03-30T00:00:00Z\"\n            },\n            {\n                \"id\": 183,\n                \"title\": \"Delhi Capitals vs Sunrisers Hyderabad LIVE Score, IPL 2025: SRH Eye Another Run-Fest vs DC After LSG Setback\",\n                \"description\": \"Delhi Capitals vs Sunrisers Hyderabad LIVE Score, IPL 2025 LIVE: Delhi Capitals are ready to host the fiery Sunrisers Hyderabad in Visakhapatnam for their next IPL 2025 match on Sunday.\",\n                \"cover\": \"\",\n                \"coverSource\": \"https://c.ndtvimg.com/2025-03/jien8fko_dc-vs-srh_625x300_30_March_25.jpg?im=FeatureCrop,algorithm=dn\",\n                \"pubDate\": \"2025-03-30T00:00:00Z\"\n            },\n            {\n                \"id\": 163,\n                \"title\": \"As Rohit Sharma Flops Again, Hardik Pandya's Blunt Warning To \\\"MI Batters\\\"\",\n                \"description\": \"Rohit Sharma, former Mumbai Indians captain, has only scored 8 runs in two matches since the start of IPL 2025.\",\n                \"cover\": \"\",\n                \"coverSource\": \"https://c.ndtvimg.com/2025-03/ndfemj7_hardik-pandya-bcci_625x300_30_March_25.jpg?im=FeatureCrop,algo\",\n                \"pubDate\": \"2025-03-30T00:00:00Z\"\n            },\n            {\n                \"id\": 187,\n                \"title\": \"'Not At All Concerned...': Skipper Shubman Gill's No Nonsense Take On Gujarat Titans' Middle Order\",\n                \"description\": \"GT overcame Mumbai Indians by 36 runs, making use of the home conditions and black soil pitch as they posted a steep 196 for eight and then restricted Hardik Pandya's team to 160/6\",\n                \"cover\": \"\",\n                \"coverSource\": \"https://c.ndtvimg.com/2025-03/qv6c1pv_shubman-gill-bcci_625x300_30_March_25.jpg?im=FeatureCrop,algor\",\n                \"pubDate\": \"2025-03-30T00:00:00Z\"\n            },\n            {\n                \"id\": 186,\n                \"title\": \"\\\"Not What He Was 3-4 Years Ago, Still Relying On Natural Talent\\\": Rohit Sharma Gets Reality Check\",\n                \"description\": \"Rohit Sharma has only scored 8 runs in two games since the start of IPL 2025.\",\n                \"cover\": \"\",\n                \"coverSource\": \"https://c.ndtvimg.com/2025-03/nc9hrpa_rohit-sharma-bcci_625x300_30_March_25.jpg?im=FeatureCrop,algor\",\n                \"pubDate\": \"2025-03-30T00:00:00Z\"\n            },\n            {\n                \"id\": 192,\n                \"title\": \"\\\"When Has Rohit Sharma Done That?\\\": Virender Sehwag Loses All Hope, Tears Into MI Icon\",\n                \"description\": \"Rohit Sharma's highest aggregate in a single IPL season was 538 runs in 2013.\",\n                \"cover\": \"\",\n                \"coverSource\": \"https://c.ndtvimg.com/2025-03/s6sofaco_rohit-sharma-bench-bcci_625x300_30_March_25.jpg?im=FeatureCro\",\n                \"pubDate\": \"2025-03-30T00:00:00Z\"\n            },\n            {\n                \"id\": 181,\n                \"title\": \"As Rohit Sharma Flops Again, Hardik Pandya Fires Indirect Warning: \\\"Batters Have To...\\\"\",\n                \"description\": \"Rohit Sharma, former Mumbai Indians captain, has only scored 8 runs in two matches since the start of IPL 2025.\",\n                \"cover\": \"\",\n                \"coverSource\": \"https://c.ndtvimg.com/2025-03/ndfemj7_hardik-pandya-bcci_625x300_30_March_25.jpg?im=FeatureCrop,algo\",\n                \"pubDate\": \"2025-03-30T00:00:00Z\"\n            },\n            {\n                \"id\": 193,\n                \"title\": \"Shubman Gill Reveals Masterplan To Nullify Rohit, Surya, Hardik, Says \\\"Decision Taken Before...\\\"\",\n                \"description\": \"Mumbai Indians could only score 160/6 while chasing a target of 197 against the Gujarat Titans.\",\n                \"cover\": \"\",\n                \"coverSource\": \"https://c.ndtvimg.com/2025-03/2mimlkrg_shubman-gill-bcci_625x300_30_March_25.jpg?im=FeatureCrop,algo\",\n                \"pubDate\": \"2025-03-30T00:00:00Z\"\n            },\n            {\n                \"id\": 164,\n                \"title\": \"After Face-Off With Hardik Pandya, Gujarat Titans Star R Sai Kishore Says \\\"Inside The Field...\\\"\",\n                \"description\": \"Gujarat Titans star bowler R Sai Kishore broke silence on his staredown with Mumbai Indians' captain Hardik Pandya.\",\n                \"cover\": \"\",\n                \"coverSource\": \"https://c.ndtvimg.com/2025-03/p3jmohcg_sai-kishore-bcci_625x300_30_March_25.jpg?im=FeatureCrop,algor\",\n                \"pubDate\": \"2025-03-30T00:00:00Z\"\n            },\n            {\n                \"id\": 185,\n                \"title\": \"\\\"Punjab Kings Need Shreyas Iyer\\\": Kuldeep Sen In Awe Of Skipper's Tactical Mindset\",\n                \"description\": \"Punjab Kings got off to a stunning start in their IPL 2025 as they claimed an 11-run victory over Gujarat Titans in Ahmedabad.\",\n                \"cover\": \"\",\n                \"coverSource\": \"https://c.ndtvimg.com/2025-03/7492kvp8_kuldeep-sen-and-shreyas-iyer_625x300_30_March_25.jpg?im=Featu\",\n                \"pubDate\": \"2025-03-30T00:00:00Z\"\n            }\n        ],\n        \"totalCount\": 87,\n        \"totalPage\": 6\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "新聞詳情",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_url}}/news/588",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"news",
+						"588"
+					]
+				},
+				"description": "## Describe\n\n分頁方式取得新聞列表\n\n## Router\n\n/news/{{newsId}}\n\n> `newsId` 可以從新聞列表(/news)API的Response中取得 \n  \n\n## Response\n\n| **欄位** | 型態 | **說明** |\n| --- | --- | --- |\n| title | String | 新聞資料列表 |\n| description | String | 總筆數 |\n| cover | String | 封面 |\n| coverSource | String | 原始封面連結 |\n| content | String | 內文 |\n| pubDate | String | 發布日期(RFC-3339) |\n"
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/news/136",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"news",
+								"136"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 28 Mar 2025 19:13:39 GMT"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 0,\n    \"msg\": \"success\",\n    \"data\": {\n        \"title\": \"IPL 2025: Skipper Hardik Pandya's Comeback To Boost Mumbai Indians, Mohammed Siraj's Form Concerns Gujarat Titans\",\n        \"description\": \"Skipper Hardik Pandya's much-anticipated comeback after serving a one-match ban will lend the required balance to Mumbai Indians' line-up when they take on Gujarat Titans.\",\n        \"cover\": \"\",\n        \"coverSource\": \"https://c.ndtvimg.com/2025-01/p507ccv8_hardik-pandya-bcci_625x300_19_January_25.jpg?im=FeatureCrop,a\",\n        \"content\": \"<p>Skipper Hardik Pandya's much-anticipated comeback after serving a one-match ban will lend the required balance to Mumbai Indians' line-up when they take on an equally desperate Gujarat Titans in Ahmedabad on Saturday as both teams are chasing their first victory in the ongoing edition of the IPL. Mumbai could not break their long standing jinx of losing their IPL opener as Chennai Super Kings comfortably won by four wickets while Gujarat Titans lost a high-scoring game to Punjab Kings by 11 runs. With nearly a week's gap between the first and second games, the MI team spent a few days at Reliance's Jamnagar facility where the whole unit relaxed and engaged in team bonding activities.</p><p>It is still early days in the tournment and MI's struggle without their pace spearhead Jasprit Bumrah was apparent and missing regular skipper Pandya in the opening game only made the matter worse.</p><p>In Indian cricket, Pandya is the only pure pace bowling all-rounder, who can make a complete difference with either of his skill-sets.</p><p>His comeback means that Robin Minz possibly would have to sit out but MI's batting on a slightly tacky Chepauk surface didn't inspire much confidence.</p><p>But on Saturday evening in Ahmedabad, the conditions for batting will be much better after 475 runs cumulatively were scored in the opening match between Punjab Kings (243) and Titans (232).</p><p>And on a track which is a batting paradise, a serious question mark remains on Mohammed Siraj's effectiveness. He gave away 54 runs in the opening game and was taken to cleaners by the Punjab Kings batters.</p><p>With not many senior Indian pacers in the GT ranks, it will be a strategic call that home team head coach Ashish Nehra will fret upon. The pressure to contain runs as well as take wickets is way too much on Kagiso Rabada and Rashid Khan.</p><p>In fact, if one revisits the opening games of both teams, it was evident that both are struggling with perfect combination of foreign recruits.</p><p>In case of MI, the issues have compounded because India's current T20I skipper Suryakumar Yadav has not been in form for a year now and former skipper Rohit Sharma's current form is also inconsistent to put it mildly.</p><p>Pandya's inclusion obviously adds firepower to batting and he can also open the bowling if necessary. He can also bowl those wide yorkers at the death overs, which Vyshak Vijaykumar of Punjab Kings executed effectively.</p><p>One of MI's main problems is wicket-keeping as they rely heavily on Ryan Rickleton. Robin Minz, who played as a batter looked out of place even though it was just the first game.</p><p>It will also be a test for rookie left-arm wrist spinner Vignesh Puthur, who got three CSK wickets on a helpful track. At Motera, the ball won't grip as much as it did at Chepauk and the turn will also be minimal. How the youngster is managed by his skipper is a big question.</p><p>For Titans, skipper Shubman Gill's season with the willow will be an indicator as to how the team performs eventually.</p><p>In the opener, the manner in which Vyshak bowled only one type of deliveries -- wide yorker or wide low full-toss -- to Sherfane Rutherford's arc, the home team coaching staff would feel that Glenn Phillips could be a better choice going forward, considering he also bowls off-spin.</p><p>But it is the bowling that will give Gill nightmares as most Indian bowlers -- Siraj, Prasidh Krishna and veteran Ishant Sharma are one dimensional hit-the-deck bowlers. No pacer except Rabada has subtle variations in his armoury.</p><p>Teams (From): Gujarat Titans: Jos Buttler, Shubman Gill, Sai Sudharsan, Glenn Phillips, Shahrukh Khan, Washington Sundar, Rahul Tewatia, Rashid Khan, Ravisrinivasan Sai Kishore, Kagiso Rabada, Mohammed Siraj, Prasidh Krishna, Ishant Sharma, Jayant Yadav, Mahipal Lomror, Karim Janat, Kulwant Khejroliya, Anuj Rawat, Gerald Coetzee, Sherfane Rutherford, Manav Suthar, Kumar Kushagra, Arshad Khan, Gurnoor Brar, Nishant Sindhu Mumbai Indians: Hardik Pandya (c), Rohit Sharma, Suryakumar Yadav, Robin Minz, Ryan Rickelton (wk), Shrijith Krishnan (wk), Bevon Jacobs, Tilak Varma, Naman Dhir, Will Jacks, Mitchell Santner, Raj Angad Bawa, Vignesh Puthur, Corbin Bosch, Trent Boult, Karn Sharma, Deepak Chahar, Ashwani Kumar, Reece Topley, VS Penmetsa, Arjun Tendulkar, Mujeeb Ur Rahman, Jasprit Bumrah.</p><p>Match Starts 7:30 PM.</p><p>(Except for the headline, this story has not been edited by NDTV staff and is published from a syndicated feed.)</p>\",\n        \"pubDate\": \"2025-03-28T00:00:00Z\"\n    }\n}"
+				},
+				{
+					"name": "找不到該頁面",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/news/136",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"news",
+								"136"
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 28 Mar 2025 19:10:16 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "43"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 4041,\n    \"msg\": \"Not Found\",\n    \"data\": null\n}"
+				}
+			]
+		},
+		{
+			"name": "影片列表",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_url}}/video",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"video"
+					]
+				},
+				"description": "## Describe\n\n影片列表\n\n## Router\n\n/video\n\n## Response\n\n| 欄位 | 型態 | **說明** |\n| --- | --- | --- |\n| \\[\\]title | String | 隊伍名稱 |\n| \\[\\]description | String | 排名 |\n| \\[\\]link | String | 比賽數 |\n| \\[\\]cover | String | 積分 |"
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:9011/video",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9011",
+							"path": [
+								"video"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 26 Mar 2025 01:47:30 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "902"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 0,\n    \"msg\": \"success\",\n    \"data\": [\n        {\n            \"title\": \"ForBiggerEscapes\",\n            \"description\": \"ForBiggerEscapes\",\n            \"link\": \"https://a.bigfly888.com/n8/video/cricket_game_1.mp4\",\n            \"cover\": \"https://a.bigfly888.com/n8/video/cricket_game_1.png\"\n        },\n        {\n            \"title\": \"ForBiggerBlazes\",\n            \"description\": \"ForBiggerBlazes\",\n            \"link\": \"https://a.bigfly888.com/n8/video/cricket_game_1.mp4\",\n            \"cover\": \"https://a.bigfly888.com/n8/video/cricket_game_1.png\"\n        },\n        {\n            \"title\": \"ElephantsDream\",\n            \"description\": \"ElephantsDream\",\n            \"link\": \"https://a.bigfly888.com/n8/video/cricket_game_1.mp4\",\n            \"cover\": \"https://a.bigfly888.com/n8/video/cricket_game_1.png\"\n        },\n        {\n            \"title\": \"BigBuckBunny\",\n            \"description\": \"BigBuckBunny\",\n            \"link\": \"https://a.bigfly888.com/n8/video/cricket_game_1.mp4\",\n            \"cover\": \"https://a.bigfly888.com/n8/video/cricket_game_1.png\"\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "排行榜",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_url}}/rank/odi",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"rank",
+						"odi"
+					]
+				},
+				"description": "## Describe\n\n賽事排行榜\n\n## Router\n\n/rank/{type}\n\n### Type\n\n類型\n\n| **值** | **說明** |\n| --- | --- |\n| test | 練習賽 |\n| odi | 單日國際賽 |\n| t20 | 國際 T20 賽 |\n\n## Response\n\n| 欄位 | 型態 | **說明** |\n| --- | --- | --- |\n| \\[\\]team | String | 隊伍名稱 |\n| \\[\\]position | String | 排名 |\n| \\[\\]matches | String | 比賽數 |\n| \\[\\]points | String | 積分 |\n| \\[\\]rating | String | 評級 |\n| \\[\\]icon | String | 隊伍Icon |"
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:9011/rank/test",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9011",
+							"path": [
+								"rank",
+								"test"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 26 Mar 2025 01:53:52 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "1322"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 0,\n    \"msg\": \"success\",\n    \"data\": [\n        {\n            \"team\": \"Australia\",\n            \"position\": 1,\n            \"matches\": 39,\n            \"points\": 4942,\n            \"rating\": 127,\n            \"icon\": \"https://documents.bcci.tv/ipl/Flags/Australia.png\"\n        },\n        {\n            \"team\": \"South Africa\",\n            \"position\": 2,\n            \"matches\": 30,\n            \"points\": 3355,\n            \"rating\": 112,\n            \"icon\": \"https://documents.bcci.tv/ipl/Flags/South_Africa.png\"\n        },\n        {\n            \"team\": \"India\",\n            \"position\": 3,\n            \"matches\": 39,\n            \"points\": 4248,\n            \"rating\": 109,\n            \"icon\": \"https://documents.bcci.tv/ipl/Flags/India.png\"\n        },\n        {\n            \"team\": \"England\",\n            \"position\": 4,\n            \"matches\": 46,\n            \"points\": 4815,\n            \"rating\": 105,\n            \"icon\": \"https://documents.bcci.tv/ipl/Flags/England.png\"\n        },\n        {\n            \"team\": \"New Zealand\",\n            \"position\": 5,\n            \"matches\": 33,\n            \"points\": 3216,\n            \"rating\": 97,\n            \"icon\": \"https://documents.bcci.tv/ipl/Flags/New_Zealand.png\"\n        },\n        {\n            \"team\": \"Sri Lanka\",\n            \"position\": 6,\n            \"matches\": 31,\n            \"points\": 2664,\n            \"rating\": 86,\n            \"icon\": \"https://documents.bcci.tv/ipl/Flags/Sri_Lanka.png\"\n        },\n        {\n            \"team\": \"Pakistan\",\n            \"position\": 7,\n            \"matches\": 30,\n            \"points\": 2462,\n            \"rating\": 82,\n            \"icon\": \"https://documents.bcci.tv/ipl/Flags/Pakistan.png\"\n        },\n        {\n            \"team\": \"West Indies\",\n            \"position\": 8,\n            \"matches\": 32,\n            \"points\": 2433,\n            \"rating\": 76,\n            \"icon\": \"https://documents.bcci.tv/ipl/Flags/West_Indies.png\"\n        },\n        {\n            \"team\": \"Bangladesh\",\n            \"position\": 9,\n            \"matches\": 29,\n            \"points\": 1884,\n            \"rating\": 65,\n            \"icon\": \"https://documents.bcci.tv/ipl/Flags/Bangladesh.png\"\n        },\n        {\n            \"team\": \"Ireland\",\n            \"position\": 10,\n            \"matches\": 6,\n            \"points\": 181,\n            \"rating\": 30,\n            \"icon\": \"https://documents.bcci.tv/ipl/Flags/Ireland.png\"\n        }\n    ]\n}"
+				},
+				{
+					"name": "錯誤的Type參數",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:9011/rank/testaa",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9011",
+							"path": [
+								"rank",
+								"testaa"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 26 Mar 2025 03:13:28 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "93"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 4001,\n    \"msg\": \"Missing required parameter error or parameter setting error\",\n    \"data\": null\n}"
+				}
+			]
+		},
+		{
+			"name": "Feedback",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"ssa\",\r\n    \"email\":\"222@cc.com\",\r\n    \"subject\": \"test\",\r\n    \"message\": \"message\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_url}}/feedback",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"feedback"
+					]
+				},
+				"description": "## Router\n\n/feedback\n\n## Requet\n\n| **欄位** | **型態** | **說明** |\n| --- | --- | --- |\n| \\*name | String | 反饋人名稱， 最小 2 字元，最大 50 字元 |\n| \\*email | String | Email，須符合Email格式 |\n| \\*subject | String | 反饋主題，最小 3 字元，最大 100 字元 |\n| \\*message | String | 反饋內容，最小 3 字元，最大 500 字元 |\n\n> `\\\\*`為必填之項目"
+			},
+			"response": [
+				{
+					"name": "錯誤的欄位值",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"ssa\",\r\n    \"email\":\"222@cc.com\",\r\n    \"subject\": \"test\",\r\n    \"message\": \"message\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api_url}}/feedback",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"feedback"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 07 Apr 2025 02:55:09 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "132"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 4001,\n    \"msg\": \"Missing required parameter error or parameter setting error\",\n    \"data\": [\n        \"Subject is invalid\",\n        \"Message is invalid\"\n    ]\n}"
+				}
+			]
+		}
+	]
+}
