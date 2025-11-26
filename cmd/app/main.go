@@ -3,8 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	_ "github.com/go-sql-driver/mysql"
-	"go.uber.org/zap"
 	"os"
 	"os/signal"
 	"sportNews/api"
@@ -14,6 +12,9 @@ import (
 	"sportNews/pkg/log"
 	"syscall"
 	"time"
+
+	_ "github.com/go-sql-driver/mysql"
+	"go.uber.org/zap"
 	"xorm.io/xorm"
 )
 
