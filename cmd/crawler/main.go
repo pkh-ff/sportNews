@@ -3,9 +3,7 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
-	_ "github.com/go-sql-driver/mysql"
-	"go.uber.org/zap"
+	"fmt"
 	"os"
 	"os/signal"
 	"sportNews/conf"
@@ -15,27 +13,35 @@ import (
 	"sportNews/internal/process"
 	"sportNews/pkg/log"
 	"sync"
-	"sync/atomic"
 	"syscall"
 	"time"
+
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+	_ "github.com/go-sql-driver/mysql"
+	"go.uber.org/zap"
 	"xorm.io/xorm"
 )
 
 var (
 	confPath string // config path
 	wg       sync.WaitGroup
-	wgCount  int32
 )
 
 func main() {
 	flag.StringVar(&confPath, "c", "process.conf.yaml", "default config path")
 	flag.Parse()
 
-	ctx := context.Background()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	config, err := conf.New(confPath)
 	if err != nil {
-		log.Error("setting conf", zap.Error(err))
+		fmt.Printf("setting conf %v\n", err)
+		return
 	}
+
+	// set log config
+	log.InitLogger(config.App.Debug)
 
 	log.Infof("setting conf", "conf:%v", config)
 	log.Info("app info", zap.String("Project", config.App.Name))
@@ -44,78 +50,65 @@ func main() {
 	db, err := database.New(config.App.Debug, config.DB)
 	if err != nil {
 		log.Error("init database", zap.Error(err))
+		return
 	}
 
 	assets.Setup(config.Assets)
 
 	s3Client, err := aws.New(config.Aws)
 
-	// set log config
-	log.InitLogger(config.App.Debug)
-
 	crawlerProcess(ctx, *config, db, s3Client)
 
-	shutdown(config, db)
-	wg.Wait()
+	shutdown(cancel, config, db)
 }
 
 func crawlerProcess(ctx context.Context, conf conf.Conf, db *xorm.EngineGroup, s3Client *s3.Client) {
+	// NDTV
 	wg.Add(1)
-	atomic.AddInt32(&wgCount, 1)
 	go func() {
 		defer wg.Done()
-		select {
-		case <-ctx.Done():
-			log.Info("NDTVProcess cancelled")
-			return
-		default:
-			process.NDTVProcess(conf.App, db)
-		}
+		process.NDTVProcess(ctx, conf.App, db)
 	}()
 
+	// BCCI
 	wg.Add(1)
-	atomic.AddInt32(&wgCount, 1)
 	go func() {
 		defer wg.Done()
-		select {
-		case <-ctx.Done():
-			log.Info("BCCIProcess cancelled")
-			return
-		default:
-			process.BCCIProcess(conf, s3Client, db)
-		}
+		process.BCCIProcess(ctx, conf, s3Client, db)
 	}()
 
+	// picture
 	wg.Add(1)
-	atomic.AddInt32(&wgCount, 1)
 	go func() {
 		defer wg.Done()
-		select {
-		case <-ctx.Done():
-			log.Info("PictureSyncProcess cancelled")
-			return
-		default:
-			process.PictureSyncProcess(conf, s3Client, db)
-		}
+		process.PictureSyncProcess(ctx, conf, s3Client, db)
 	}()
 }
 
-func shutdown(config *conf.Conf, db *xorm.EngineGroup) {
+func shutdown(cancel context.CancelFunc, config *conf.Conf, db *xorm.EngineGroup) {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+
 	s := <-quit
 	log.Infof("service shutdown", "get a signal %s. %s Server is shutting down ...", s.String(), config.App.Name)
 
-	_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	cancel()
 
-	db.Close() // 關閉資料庫
+	done := make(chan struct{})
+	go func() {
+		wg.Wait()
+		close(done)
+	}()
 
-	cancel() // 發送取消信號
+	select {
+	case <-done:
+		log.Info("all crawler goroutines exited")
+	case <-time.After(5 * time.Second):
+		log.Warn("timeout waiting for goroutines, forcing shutdown")
+	}
 
-	log.Info("Waiting for goroutines to finish...")
-	for i := int32(0); i < atomic.LoadInt32(&wgCount); i++ {
-		wg.Done() // 確保所有 goroutine 都完成
+	if err := db.Close(); err != nil {
+		log.Error("close database error", zap.Error(err))
 	}
 
 	log.Infof("service shutdown", "%s Server is exit", config.App.Name)
