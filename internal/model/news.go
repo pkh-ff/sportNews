@@ -14,7 +14,7 @@ type News struct {
 	CoverCustom string      `xorm:"cover_custom"`
 	Link        string      `xorm:"link"`
 	Content     string      `xorm:"content"`
-	Source      string      `xomr:"source"`
+	Source      string      `xorm:"source"`
 	Status      enum.Status `xorm:"status"`
 	PubDate     time.Time   `xorm:"pub_date"`
 	CreateAt    time.Time   `xorm:"created create_at"`
