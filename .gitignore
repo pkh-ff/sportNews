@@ -198,3 +198,5 @@ app.conf.yaml
 process.conf.yaml
 .env
 logs/*.log
+main
+mian.exe
