@@ -1,8 +1,9 @@
 package repository
 
 import (
-	"go.uber.org/zap"
 	"sportNews/pkg/log"
+
+	"go.uber.org/zap"
 	"xorm.io/xorm"
 )
 

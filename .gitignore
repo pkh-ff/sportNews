@@ -197,6 +197,7 @@ $RECYCLE.BIN/
 app.conf.yaml
 process.conf.yaml
 .env
-logs/*.log
+logs/
 main
 mian.exe
+go.mod

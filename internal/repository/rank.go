@@ -1,10 +1,11 @@
 package repository
 
 import (
-	"go.uber.org/zap"
 	"sportNews/internal/enum"
 	"sportNews/internal/model"
 	"sportNews/pkg/log"
+
+	"go.uber.org/zap"
 )
 
 // GetRankDate
