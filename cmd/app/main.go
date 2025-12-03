@@ -43,7 +43,7 @@ func main() {
 	// 設定資料庫
 	db, err := database.New(config.App.Debug, config.DB)
 	if err != nil {
-		log.Fatal("Failed to initialize database", zap.Error(err))
+		log.Error("init database", zap.Error(err))
 	}
 
 	assets.Setup(config.Assets)
