@@ -2,9 +2,6 @@ package crawler
 
 import (
 	"fmt"
-	"github.com/PuerkitoBio/goquery"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"go.uber.org/zap"
 	"net/http"
 	"sportNews/internal/assets"
 	"sportNews/internal/enum"
@@ -13,6 +10,10 @@ import (
 	"sportNews/pkg/log"
 	"strconv"
 	"strings"
+
+	"github.com/PuerkitoBio/goquery"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"go.uber.org/zap"
 	"xorm.io/xorm"
 )
 

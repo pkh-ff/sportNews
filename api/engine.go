@@ -1,10 +1,11 @@
 package api
 
 import (
+	"sportNews/pkg/log"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	"sportNews/pkg/log"
 )
 
 // Engine

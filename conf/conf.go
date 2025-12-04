@@ -1,9 +1,10 @@
 package conf
 
 import (
-	"github.com/spf13/viper"
 	"sportNews/conf/database"
 	"strings"
+
+	"github.com/spf13/viper"
 )
 
 type Conf struct {

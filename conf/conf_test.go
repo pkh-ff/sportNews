@@ -1,9 +1,10 @@
 package conf
 
 import (
-	"github.com/stretchr/testify/assert"
 	"sportNews/conf/database"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // 測試 api-server APP config是否符合格式

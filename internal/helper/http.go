@@ -1,11 +1,12 @@
 package helper
 
 import (
-	"go.uber.org/zap"
 	"net/http"
 	"net/url"
 	"sportNews/pkg/log"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 // BuildHttpRequest

@@ -1,8 +1,6 @@
 package crawler
 
 import (
-	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"go.uber.org/zap"
 	"net/http"
 	"regexp"
 	"sportNews/internal/assets"
@@ -10,6 +8,9 @@ import (
 	"sportNews/internal/repository"
 	"sportNews/pkg/log"
 	"strconv"
+
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"go.uber.org/zap"
 	"xorm.io/xorm"
 )
 

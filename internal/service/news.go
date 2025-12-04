@@ -1,11 +1,12 @@
 package service
 
 import (
-	"go.uber.org/zap"
 	"regexp"
 	"sportNews/internal/assets"
 	"sportNews/internal/model/api"
 	"sportNews/pkg/log"
+
+	"go.uber.org/zap"
 )
 
 // QueryNews

@@ -2,7 +2,6 @@ package helper
 
 import (
 	"fmt"
-	"go.uber.org/zap"
 	"io"
 	"net/http"
 	"net/url"
@@ -10,6 +9,8 @@ import (
 	"path"
 	"sportNews/pkg/log"
 	"strings"
+
+	"go.uber.org/zap"
 )
 
 // WriteToFile

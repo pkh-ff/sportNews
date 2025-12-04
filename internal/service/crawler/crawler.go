@@ -2,13 +2,14 @@ package crawler
 
 import (
 	"encoding/json"
-	"go.uber.org/zap"
 	"sportNews/internal/enum"
 	"sportNews/internal/model"
 	"sportNews/internal/model/crawler"
 	"sportNews/internal/repository"
 	"sportNews/pkg/log"
 	"time"
+
+	"go.uber.org/zap"
 	"xorm.io/xorm"
 )
 

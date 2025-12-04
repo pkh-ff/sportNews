@@ -2,11 +2,12 @@ package service
 
 import (
 	"encoding/json"
-	"go.uber.org/zap"
 	"sportNews/internal/assets"
 	"sportNews/internal/enum"
 	"sportNews/internal/model"
 	"sportNews/pkg/log"
+
+	"go.uber.org/zap"
 )
 
 // GetRankData

@@ -2,15 +2,16 @@ package api
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
-	"go.uber.org/zap"
 	"net/http"
 	"sportNews/internal/enum"
 	"sportNews/internal/model/api"
 	"sportNews/internal/response"
 	"sportNews/pkg/log"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
+	"go.uber.org/zap"
 )
 
 func (app App) router(e *gin.Engine) {

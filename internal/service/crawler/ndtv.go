@@ -1,13 +1,14 @@
 package crawler
 
 import (
-	"github.com/PuerkitoBio/goquery"
-	"go.uber.org/zap"
 	"net/http"
 	"sportNews/internal/helper"
 	crawlerModel "sportNews/internal/model/crawler"
 	"sportNews/pkg/log"
 	"strings"
+
+	"github.com/PuerkitoBio/goquery"
+	"go.uber.org/zap"
 	"xorm.io/xorm"
 )
 
