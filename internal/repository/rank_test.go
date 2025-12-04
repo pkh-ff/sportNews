@@ -2,134 +2,102 @@ package repository
 
 import (
 	"fmt"
-	"os"
 	"regexp"
 	"sportNews/internal/enum"
 	"sportNews/internal/model"
-	"sportNews/pkg/log"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"xorm.io/xorm"
-	"xorm.io/xorm/core"
 )
 
-const getRankDateSql = "SELECT `data` FROM `sport_rank` WHERE (type = ?) ORDER BY date DESC LIMIT 1"
+const getRankDateSqlPattern = "SELECT `data` FROM `sport_rank` WHERE (type = ?) ORDER BY date DESC LIMIT 1"
 const insertRankPattern = "INSERT INTO .*sport_rank.*"
 const deleteRankPattern = "DELETE FROM .*sport_rank.*"
-const getOldestRankSql = "SELECT `id` FROM `sport_rank` WHERE (type = ?) ORDER BY date ASC LIMIT 1"
-const checkRankDataExistSql = "SELECT `id`, `type`, `data`, `date`, `create_at` FROM `sport_rank` WHERE (type = ?) AND (date = ?) LIMIT 1"
-const getRankDataCountByTypeSql = "SELECT count(*) FROM `sport_rank` WHERE (type = ?)"
-
-func newMockEngineGroup(t *testing.T) (*xorm.EngineGroup, sqlmock.Sqlmock) {
-	t.Helper()
-
-	db, mock, err := sqlmock.New()
-	require.NoError(t, err)
-
-	coreDB := core.FromDB(db)
-
-	engine, err := xorm.NewEngineWithDB("mysql", "sqlmock_db_0", coreDB)
-	require.NoError(t, err)
-
-	engineGroup, err := xorm.NewEngineGroup(
-		engine,
-		[]*xorm.Engine{},
-	)
-	require.NoError(t, err)
-
-	return engineGroup, mock
-}
-
-func TestMain(m *testing.M) {
-	log.InitLogger(false)
-	code := m.Run()
-	log.CloseLogger()
-	os.Exit(code)
-}
+const getOldestRankSqlPattern = "SELECT `id` FROM `sport_rank` WHERE (type = ?) ORDER BY date ASC LIMIT 1"
+const checkRankDataExistSqlPattern = "SELECT `id`, `type`, `data`, `date`, `create_at` FROM `sport_rank` WHERE (type = ?) AND (date = ?) LIMIT 1"
+const getRankDataCountByTypeSqlPattern = "SELECT count(*) FROM `sport_rank` WHERE (type = ?)"
 
 func TestGetRankDate(t *testing.T) {
 	eg, mock := newMockEngineGroup(t)
 	defer eg.Close()
 
-	r := New(eg)
-	repo := &r
+	repo := newMockRepository(eg)
 
 	rankType := enum.Test
-	expectedData := `{"rank":"some-json-data"}`
+	expected := model.SportRank{
+		Type: rankType,
+		Data: "test",
+	}
 
 	rows := sqlmock.NewRows([]string{"data"}).
-		AddRow(expectedData)
+		AddRow(expected.Data)
 
-	mock.ExpectQuery(regexp.QuoteMeta(getRankDateSql)).
+	mock.ExpectQuery(regexp.QuoteMeta(getRankDateSqlPattern)).
 		WithArgs(rankType).
 		WillReturnRows(rows)
 
-	got, err := repo.GetRankDate(rankType)
+	actual, err := repo.GetRankDate(rankType)
 
 	require.NoError(t, err)
 	require.NoError(t, mock.ExpectationsWereMet())
-	assert.Equal(t, expectedData, got.Data)
+	assert.Equal(t, expected.Data, actual.Data)
 }
 
 func TestGetRankDateWithDBError(t *testing.T) {
 	eg, mock := newMockEngineGroup(t)
 	defer eg.Close()
 
-	r := New(eg)
-	repo := &r
+	repo := newMockRepository(eg)
 
 	rankType := enum.Test
 
-	mock.ExpectQuery(regexp.QuoteMeta(getRankDateSql)).
+	mock.ExpectQuery(regexp.QuoteMeta(getRankDateSqlPattern)).
 		WithArgs(rankType).
 		WillReturnError(fmt.Errorf("db error"))
 
-	got, err := repo.GetRankDate(rankType)
+	actual, err := repo.GetRankDate(rankType)
 
 	require.Error(t, err)
 	require.NoError(t, mock.ExpectationsWereMet())
-	assert.Zero(t, got.Data)
+	assert.Zero(t, actual.Data)
 }
 
 func TestGetRankDateWithNoData(t *testing.T) {
 	eg, mock := newMockEngineGroup(t)
 	defer eg.Close()
 
-	r := New(eg)
-	repo := &r
+	repo := newMockRepository(eg)
 
 	rankType := enum.Test
 
 	rows := sqlmock.NewRows([]string{"data"})
 
-	mock.ExpectQuery(regexp.QuoteMeta(getRankDateSql)).
+	mock.ExpectQuery(regexp.QuoteMeta(getRankDateSqlPattern)).
 		WithArgs(rankType).
 		WillReturnRows(rows)
 
-	got, err := repo.GetRankDate(rankType)
+	actual, err := repo.GetRankDate(rankType)
 
 	require.NoError(t, err)
 	require.NoError(t, mock.ExpectationsWereMet())
-	assert.Zero(t, got.Data)
+	assert.Zero(t, actual.Data)
 }
 
 func TestInsertRank(t *testing.T) {
 	eg, mock := newMockEngineGroup(t)
 	defer eg.Close()
 
-	r := New(eg)
-	repo := &r
+	repo := newMockRepository(eg)
 
 	rank := model.SportRank{
 		Type: enum.Test,
-		Data: `{"rank":"some-json-data"}`,
+		Data: "test",
 	}
 
 	mock.ExpectExec(insertRankPattern).
-		WillReturnResult(sqlmock.NewResult(1, 1)) // lastInsertId, rowsAffected
+		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	err := repo.InsertRank(rank)
 
@@ -141,12 +109,11 @@ func TestInsertRankWithDBError(t *testing.T) {
 	eg, mock := newMockEngineGroup(t)
 	defer eg.Close()
 
-	r := New(eg)
-	repo := &r
+	repo := newMockRepository(eg)
 
 	rank := model.SportRank{
 		Type: enum.Test,
-		Data: `{"rank":"some-json-data"}`,
+		Data: "test",
 	}
 
 	mock.ExpectExec(insertRankPattern).
@@ -162,118 +129,112 @@ func TestGetOldestRankDataByType(t *testing.T) {
 	eg, mock := newMockEngineGroup(t)
 	defer eg.Close()
 
-	r := New(eg)
-	repo := &r
+	repo := newMockRepository(eg)
 
 	rankType := enum.Test
-	expectedID := 1
+	expected := 1
 
 	rows := sqlmock.NewRows([]string{"id"}).
-		AddRow(expectedID)
+		AddRow(expected)
 
-	mock.ExpectQuery(regexp.QuoteMeta(getOldestRankSql)).
+	mock.ExpectQuery(regexp.QuoteMeta(getOldestRankSqlPattern)).
 		WithArgs(rankType).
 		WillReturnRows(rows)
 
-	got, err := repo.GetOldestRankDataByType(rankType)
+	actual, err := repo.GetOldestRankDataByType(rankType)
 
 	require.NoError(t, err)
 	require.NoError(t, mock.ExpectationsWereMet())
-	assert.Equal(t, expectedID, got.Id)
+	assert.Equal(t, expected, actual.Id)
 }
 
 func TestGetOldestRankDataByTypeWithNoData(t *testing.T) {
 	eg, mock := newMockEngineGroup(t)
 	defer eg.Close()
 
-	r := New(eg)
-	repo := &r
+	repo := newMockRepository(eg)
 
 	rankType := enum.Test
 
 	rows := sqlmock.NewRows([]string{"id"})
 
-	mock.ExpectQuery(regexp.QuoteMeta(getOldestRankSql)).
+	mock.ExpectQuery(regexp.QuoteMeta(getOldestRankSqlPattern)).
 		WithArgs(rankType).
 		WillReturnRows(rows)
 
-	got, err := repo.GetOldestRankDataByType(rankType)
+	actual, err := repo.GetOldestRankDataByType(rankType)
 
 	require.NoError(t, err)
 	require.NoError(t, mock.ExpectationsWereMet())
-	assert.Zero(t, got.Id)
+	assert.Zero(t, actual.Id)
 }
 
 func TestGetOldestRankDataByTypeWithDBError(t *testing.T) {
 	eg, mock := newMockEngineGroup(t)
 	defer eg.Close()
 
-	r := New(eg)
-	repo := &r
+	repo := newMockRepository(eg)
 
 	rankType := enum.Test
 
-	mock.ExpectQuery(regexp.QuoteMeta(getOldestRankSql)).
+	mock.ExpectQuery(regexp.QuoteMeta(getOldestRankSqlPattern)).
 		WithArgs(rankType).
 		WillReturnError(fmt.Errorf("db error"))
 
-	got, err := repo.GetOldestRankDataByType(rankType)
+	actual, err := repo.GetOldestRankDataByType(rankType)
 
 	require.Error(t, err)
 	require.NoError(t, mock.ExpectationsWereMet())
-	assert.Zero(t, got.Id)
+	assert.Zero(t, actual.Id)
 }
 
 func TestGetRankDataCountByType(t *testing.T) {
 	eg, mock := newMockEngineGroup(t)
 	defer eg.Close()
 
-	r := New(eg)
-	repo := &r
+	repo := newMockRepository(eg)
 
 	rankType := enum.Test
-	var expectedCount int64 = 5
+	var expected int64 = 5
 
 	rows := sqlmock.NewRows([]string{"count"}).
-		AddRow(expectedCount)
+		AddRow(expected)
 
-	mock.ExpectQuery(regexp.QuoteMeta(getRankDataCountByTypeSql)).
+	mock.ExpectQuery(regexp.QuoteMeta(getRankDataCountByTypeSqlPattern)).
 		WithArgs(rankType).
 		WillReturnRows(rows)
 
-	got, err := repo.GetRankDataCountByType(rankType)
+	actual, err := repo.GetRankDataCountByType(rankType)
 
 	require.NoError(t, err)
 	require.NoError(t, mock.ExpectationsWereMet())
-	assert.Equal(t, expectedCount, got)
+	assert.Equal(t, expected, actual)
 }
 
 func TestGetRankDataCountByTypeWithDBError(t *testing.T) {
 	eg, mock := newMockEngineGroup(t)
 	defer eg.Close()
 
-	r := New(eg)
-	repo := &r
+	repo := newMockRepository(eg)
 
 	rankType := enum.Test
 
-	mock.ExpectQuery(regexp.QuoteMeta(getRankDataCountByTypeSql)).
+	mock.ExpectQuery(regexp.QuoteMeta(getRankDataCountByTypeSqlPattern)).
 		WithArgs(rankType).
 		WillReturnError(fmt.Errorf("db error"))
 
-	got, err := repo.GetRankDataCountByType(rankType)
+	actual, err := repo.GetRankDataCountByType(rankType)
 
 	require.Error(t, err)
 	require.NoError(t, mock.ExpectationsWereMet())
-	assert.Zero(t, got)
+	assert.Zero(t, actual)
 }
 
 func TestCheckRankDataExist(t *testing.T) {
 	eg, mock := newMockEngineGroup(t)
 	defer eg.Close()
 
-	r := New(eg)
-	repo := &r
+	repo := newMockRepository(eg)
 
 	date := "2025-01-01"
 	rankType := enum.Test
@@ -281,7 +242,7 @@ func TestCheckRankDataExist(t *testing.T) {
 	rows := sqlmock.NewRows([]string{"id"}).
 		AddRow(int64(1))
 
-	mock.ExpectQuery(regexp.QuoteMeta(checkRankDataExistSql)).
+	mock.ExpectQuery(regexp.QuoteMeta(checkRankDataExistSqlPattern)).
 		WithArgs(rankType, date).
 		WillReturnRows(rows)
 
@@ -296,15 +257,14 @@ func TestCheckRankDataExistWithNotExists(t *testing.T) {
 	eg, mock := newMockEngineGroup(t)
 	defer eg.Close()
 
-	r := New(eg)
-	repo := &r
+	repo := newMockRepository(eg)
 
 	date := "2025-01-01"
 	rankType := enum.Test
 
 	rows := sqlmock.NewRows([]string{"id"})
 
-	mock.ExpectQuery(regexp.QuoteMeta(checkRankDataExistSql)).
+	mock.ExpectQuery(regexp.QuoteMeta(checkRankDataExistSqlPattern)).
 		WithArgs(rankType, date).
 		WillReturnRows(rows)
 
@@ -319,13 +279,12 @@ func TestCheckRankDataExistWithDBError(t *testing.T) {
 	eg, mock := newMockEngineGroup(t)
 	defer eg.Close()
 
-	r := New(eg)
-	repo := &r
+	repo := newMockRepository(eg)
 
 	date := "2025-01-01"
 	rankType := enum.Test
 
-	mock.ExpectQuery(regexp.QuoteMeta(checkRankDataExistSql)).
+	mock.ExpectQuery(regexp.QuoteMeta(checkRankDataExistSqlPattern)).
 		WithArgs(rankType, date).
 		WillReturnError(fmt.Errorf("db error"))
 
@@ -340,8 +299,7 @@ func TestDeleteRankData(t *testing.T) {
 	eg, mock := newMockEngineGroup(t)
 	defer eg.Close()
 
-	r := New(eg)
-	repo := &r
+	repo := newMockRepository(eg)
 
 	rank := model.SportRank{
 		Id:   1,
@@ -363,8 +321,7 @@ func TestDeleteRankDataWithDBError(t *testing.T) {
 	eg, mock := newMockEngineGroup(t)
 	defer eg.Close()
 
-	r := New(eg)
-	repo := &r
+	repo := newMockRepository(eg)
 
 	rank := model.SportRank{
 		Id:   1,
