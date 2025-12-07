@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"os"
 	"sportNews/pkg/log"
 	"testing"
@@ -16,6 +17,44 @@ func TestMain(m *testing.M) {
 	code := m.Run()
 	log.CloseLogger()
 	os.Exit(code)
+}
+
+func TestClose(t *testing.T) {
+	eg, mock := newMockEngineGroup(t)
+
+	repo := newMockRepository(eg)
+
+	mock.ExpectClose()
+
+	err := repo.Close()
+
+	require.NoError(t, err)
+	require.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestCloseWithDBError(t *testing.T) {
+	eg, mock := newMockEngineGroup(t)
+
+	repo := newMockRepository(eg)
+
+	mock.ExpectClose().
+		WillReturnError(fmt.Errorf("close error"))
+
+	err := repo.Close()
+
+	require.Error(t, err)
+	require.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestCloseWithNilDB(t *testing.T) {
+	repo := Repository{
+		db:  nil,
+		idx: 0,
+	}
+
+	err := repo.Close()
+
+	require.NoError(t, err)
 }
 
 func newMockEngineGroup(t *testing.T) (*xorm.EngineGroup, sqlmock.Sqlmock) {
