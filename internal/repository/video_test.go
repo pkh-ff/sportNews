@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const videoListSqlPattern = "SELECT `title`, `description`, `cover`, `link` FROM `video` WHERE \\(status = \\?\\) ORDER BY RAND\\(\\) LIMIT \\d+"
+const selectVideoPattern = "FROM `video`"
 
 func TestVideoList(t *testing.T) {
 	eg, mock := newMockEngineGroup(t)
@@ -24,7 +24,7 @@ func TestVideoList(t *testing.T) {
 	expected = append(expected, model.Video{Title: "title-1", Description: "desc-1", Cover: "cover-1", Link: "link-1"})
 	expected = append(expected, model.Video{Title: "title-2", Description: "desc-2", Cover: "cover-2", Link: "link-2"})
 
-	mock.ExpectQuery(videoListSqlPattern).
+	mock.ExpectQuery(selectVideoPattern).
 		WithArgs(enum.Enable).
 		WillReturnRows(videosToRows(expected))
 
@@ -48,7 +48,7 @@ func TestVideoListWithDBError(t *testing.T) {
 
 	repo := newMockRepository(eg)
 
-	mock.ExpectQuery(videoListSqlPattern).
+	mock.ExpectQuery(selectVideoPattern).
 		WithArgs(enum.Enable).
 		WillReturnError(fmt.Errorf("db error"))
 

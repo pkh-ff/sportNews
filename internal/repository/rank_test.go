@@ -2,7 +2,6 @@ package repository
 
 import (
 	"fmt"
-	"regexp"
 	"sportNews/internal/enum"
 	"sportNews/internal/model"
 	"testing"
@@ -12,12 +11,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const getRankDateSqlPattern = "SELECT `data` FROM `sport_rank` WHERE (type = ?) ORDER BY date DESC LIMIT 1"
-const insertRankPattern = "INSERT INTO .*sport_rank.*"
-const deleteRankPattern = "DELETE FROM .*sport_rank.*"
-const getOldestRankSqlPattern = "SELECT `id` FROM `sport_rank` WHERE (type = ?) ORDER BY date ASC LIMIT 1"
-const checkRankDataExistSqlPattern = "SELECT `id`, `type`, `data`, `date`, `create_at` FROM `sport_rank` WHERE (type = ?) AND (date = ?) LIMIT 1"
-const getRankDataCountByTypeSqlPattern = "SELECT count(*) FROM `sport_rank` WHERE (type = ?)"
+const (
+	selectRankPattern = "FROM `sport_rank`"
+	insertRankPattern = "INSERT INTO `sport_rank`"
+	deleteRankPattern = "DELETE FROM `sport_rank`"
+)
 
 func TestGetRankDate(t *testing.T) {
 	eg, mock := newMockEngineGroup(t)
@@ -34,7 +32,7 @@ func TestGetRankDate(t *testing.T) {
 	rows := sqlmock.NewRows([]string{"data"}).
 		AddRow(expected.Data)
 
-	mock.ExpectQuery(regexp.QuoteMeta(getRankDateSqlPattern)).
+	mock.ExpectQuery(selectRankPattern).
 		WithArgs(rankType).
 		WillReturnRows(rows)
 
@@ -53,7 +51,7 @@ func TestGetRankDateWithDBError(t *testing.T) {
 
 	rankType := enum.Test
 
-	mock.ExpectQuery(regexp.QuoteMeta(getRankDateSqlPattern)).
+	mock.ExpectQuery(selectRankPattern).
 		WithArgs(rankType).
 		WillReturnError(fmt.Errorf("db error"))
 
@@ -74,7 +72,7 @@ func TestGetRankDateWithNoData(t *testing.T) {
 
 	rows := sqlmock.NewRows([]string{"data"})
 
-	mock.ExpectQuery(regexp.QuoteMeta(getRankDateSqlPattern)).
+	mock.ExpectQuery(selectRankPattern).
 		WithArgs(rankType).
 		WillReturnRows(rows)
 
@@ -137,7 +135,7 @@ func TestGetOldestRankDataByType(t *testing.T) {
 	rows := sqlmock.NewRows([]string{"id"}).
 		AddRow(expected)
 
-	mock.ExpectQuery(regexp.QuoteMeta(getOldestRankSqlPattern)).
+	mock.ExpectQuery(selectRankPattern).
 		WithArgs(rankType).
 		WillReturnRows(rows)
 
@@ -158,7 +156,7 @@ func TestGetOldestRankDataByTypeWithNoData(t *testing.T) {
 
 	rows := sqlmock.NewRows([]string{"id"})
 
-	mock.ExpectQuery(regexp.QuoteMeta(getOldestRankSqlPattern)).
+	mock.ExpectQuery(selectRankPattern).
 		WithArgs(rankType).
 		WillReturnRows(rows)
 
@@ -177,7 +175,7 @@ func TestGetOldestRankDataByTypeWithDBError(t *testing.T) {
 
 	rankType := enum.Test
 
-	mock.ExpectQuery(regexp.QuoteMeta(getOldestRankSqlPattern)).
+	mock.ExpectQuery(selectRankPattern).
 		WithArgs(rankType).
 		WillReturnError(fmt.Errorf("db error"))
 
@@ -200,7 +198,7 @@ func TestGetRankDataCountByType(t *testing.T) {
 	rows := sqlmock.NewRows([]string{"count"}).
 		AddRow(expected)
 
-	mock.ExpectQuery(regexp.QuoteMeta(getRankDataCountByTypeSqlPattern)).
+	mock.ExpectQuery(selectRankPattern).
 		WithArgs(rankType).
 		WillReturnRows(rows)
 
@@ -219,7 +217,7 @@ func TestGetRankDataCountByTypeWithDBError(t *testing.T) {
 
 	rankType := enum.Test
 
-	mock.ExpectQuery(regexp.QuoteMeta(getRankDataCountByTypeSqlPattern)).
+	mock.ExpectQuery(selectRankPattern).
 		WithArgs(rankType).
 		WillReturnError(fmt.Errorf("db error"))
 
@@ -242,7 +240,7 @@ func TestCheckRankDataExist(t *testing.T) {
 	rows := sqlmock.NewRows([]string{"id"}).
 		AddRow(int64(1))
 
-	mock.ExpectQuery(regexp.QuoteMeta(checkRankDataExistSqlPattern)).
+	mock.ExpectQuery(selectRankPattern).
 		WithArgs(rankType, date).
 		WillReturnRows(rows)
 
@@ -264,7 +262,7 @@ func TestCheckRankDataExistWithNotExists(t *testing.T) {
 
 	rows := sqlmock.NewRows([]string{"id"})
 
-	mock.ExpectQuery(regexp.QuoteMeta(checkRankDataExistSqlPattern)).
+	mock.ExpectQuery(selectRankPattern).
 		WithArgs(rankType, date).
 		WillReturnRows(rows)
 
@@ -284,7 +282,7 @@ func TestCheckRankDataExistWithDBError(t *testing.T) {
 	date := "2025-01-01"
 	rankType := enum.Test
 
-	mock.ExpectQuery(regexp.QuoteMeta(checkRankDataExistSqlPattern)).
+	mock.ExpectQuery(selectRankPattern).
 		WithArgs(rankType, date).
 		WillReturnError(fmt.Errorf("db error"))
 

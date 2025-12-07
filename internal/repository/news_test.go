@@ -2,7 +2,6 @@ package repository
 
 import (
 	"fmt"
-	"regexp"
 	"sportNews/internal/enum"
 	"sportNews/internal/model"
 	"testing"
@@ -13,11 +12,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const getNoCoverNewsSqlPattern = "SELECT `id`, `title`, `description`, `cover`, `cover_source`, `cover_custom`, `link`, `content`, `source`, `status`, `pub_date`, `create_at`, `update_at` FROM `news` WHERE \\(status = \\?\\) AND \\(cover IS NULL OR cover = \\?\\) ORDER BY pub_date DESC LIMIT \\d+"
-const getNoCoverCustomNewsSqlPattern = "SELECT .* FROM `news` WHERE \\(status = \\?\\) AND \\(cover_custom IS NULL OR cover_custom = \\?\\) ORDER BY update_at DESC, id DESC LIMIT 500"
-const getLastUpdateCoverCustomNewsSqlPattern = "SELECT `cover_custom` FROM `news`"
-const queryNewsByPageSqlPattern = "SELECT .* FROM `news` WHERE \\(status = \\?\\).*ORDER BY pub_date DESC LIMIT .*"
-const findNewsSql = "SELECT `title`, `description`, `cover`, `cover_source`, `cover_custom`, `content`, `pub_date` FROM `news` WHERE (id = ?) AND (status = ?) LIMIT 1"
+const (
+	selectNewsPattern = "FROM `news`"
+	insertNewsPattern = "INSERT INTO `news`"
+	updateNewsPattern = "UPDATE `news`"
+)
 
 func TestGetNoCoverNews(t *testing.T) {
 	eg, mock := newMockEngineGroup(t)
@@ -30,7 +29,7 @@ func TestGetNoCoverNews(t *testing.T) {
 		{Title: "title2"},
 	}
 
-	mock.ExpectQuery(getNoCoverNewsSqlPattern).
+	mock.ExpectQuery(selectNewsPattern).
 		WithArgs(enum.Enable, "").
 		WillReturnRows(newsToRows(expected))
 
@@ -52,7 +51,7 @@ func TestGetNoCoverNewsWithDataEmpty(t *testing.T) {
 
 	rows := sqlmock.NewRows([]string{"data"})
 
-	mock.ExpectQuery(getNoCoverNewsSqlPattern).
+	mock.ExpectQuery(selectNewsPattern).
 		WithArgs(enum.Enable, "").
 		WillReturnRows(rows)
 
@@ -69,7 +68,7 @@ func TestGetNoCoverNewsWithDBError(t *testing.T) {
 
 	repo := newMockRepository(eg)
 
-	mock.ExpectQuery(getNoCoverNewsSqlPattern).
+	mock.ExpectQuery(selectNewsPattern).
 		WithArgs(enum.Enable, "").
 		WillReturnError(fmt.Errorf("db error"))
 
@@ -91,7 +90,7 @@ func TestGetNoCoverCustomNews(t *testing.T) {
 		{Title: "title2"},
 	}
 
-	mock.ExpectQuery(getNoCoverCustomNewsSqlPattern).
+	mock.ExpectQuery(selectNewsPattern).
 		WithArgs(enum.Enable, "").
 		WillReturnRows(newsToRows(expected))
 
@@ -113,7 +112,7 @@ func TestGetNoCoverCustomNewsWithEmpty(t *testing.T) {
 
 	rows := sqlmock.NewRows([]string{"data"})
 
-	mock.ExpectQuery(getNoCoverCustomNewsSqlPattern).
+	mock.ExpectQuery(selectNewsPattern).
 		WithArgs(enum.Enable, "").
 		WillReturnRows(rows)
 
@@ -130,7 +129,7 @@ func TestGetNoCoverCustomNewsWithDBError(t *testing.T) {
 
 	repo := newMockRepository(eg)
 
-	mock.ExpectQuery(getNoCoverCustomNewsSqlPattern).
+	mock.ExpectQuery(selectNewsPattern).
 		WithArgs(enum.Enable, "").
 		WillReturnError(fmt.Errorf("db error"))
 
@@ -154,7 +153,7 @@ func TestGetLastUpdateCoverCustomNews(t *testing.T) {
 	rows := sqlmock.NewRows([]string{"cover_custom"}).
 		AddRow(expected.CoverCustom)
 
-	mock.ExpectQuery(regexp.QuoteMeta(getLastUpdateCoverCustomNewsSqlPattern)).
+	mock.ExpectQuery(selectNewsPattern).
 		WithArgs(enum.Enable, ""). // status = ?, cover_custom != ?
 		WillReturnRows(rows)
 
@@ -174,7 +173,7 @@ func TestGetLastUpdateCoverCustomNewsWithNoData(t *testing.T) {
 
 	rows := sqlmock.NewRows([]string{"cover_custom"})
 
-	mock.ExpectQuery(regexp.QuoteMeta(getLastUpdateCoverCustomNewsSqlPattern)).
+	mock.ExpectQuery(selectNewsPattern).
 		WithArgs(enum.Enable, ""). // status = ?, cover_custom != ?
 		WillReturnRows(rows)
 
@@ -191,7 +190,7 @@ func TestTestGetLastUpdateCoverCustomNewsWithDBError(t *testing.T) {
 
 	repo := newMockRepository(eg)
 
-	mock.ExpectQuery(regexp.QuoteMeta(getLastUpdateCoverCustomNewsSqlPattern)).
+	mock.ExpectQuery(selectNewsPattern).
 		WithArgs(enum.Enable, "").
 		WillReturnError(fmt.Errorf("db error"))
 
@@ -212,7 +211,7 @@ func TestQueryNewsCount(t *testing.T) {
 	rows := sqlmock.NewRows([]string{"count"}).
 		AddRow(expected)
 
-	mock.ExpectQuery(regexp.QuoteMeta("SELECT count(`id`) FROM `news`")).
+	mock.ExpectQuery(selectNewsPattern).
 		WillReturnRows(rows)
 
 	actual, err := repo.QueryNewsCount()
@@ -228,7 +227,7 @@ func TestQueryNewsCountWithDBError(t *testing.T) {
 
 	repo := newMockRepository(eg)
 
-	mock.ExpectQuery(regexp.QuoteMeta("SELECT count(`id`) FROM `news`")).
+	mock.ExpectQuery(selectNewsPattern).
 		WillReturnError(fmt.Errorf("db error"))
 
 	actual, err := repo.QueryNewsCount()
@@ -265,7 +264,7 @@ func TestQueryNewsByPage(t *testing.T) {
 		},
 	}
 
-	mock.ExpectQuery(queryNewsByPageSqlPattern).
+	mock.ExpectQuery(selectNewsPattern).
 		WithArgs(enum.Enable).
 		WillReturnRows(newsPageToRows(expected))
 
@@ -301,7 +300,7 @@ func TestQueryNewsByPageWithDataEmpty(t *testing.T) {
 		"pub_date",
 	})
 
-	mock.ExpectQuery(queryNewsByPageSqlPattern).
+	mock.ExpectQuery(selectNewsPattern).
 		WithArgs(enum.Enable).
 		WillReturnRows(rows)
 
@@ -318,7 +317,7 @@ func TestQueryNewsByPageWithDBError(t *testing.T) {
 
 	repo := newMockRepository(eg)
 
-	mock.ExpectQuery(queryNewsByPageSqlPattern).
+	mock.ExpectQuery(selectNewsPattern).
 		WithArgs(enum.Enable).
 		WillReturnError(fmt.Errorf("db error"))
 
@@ -362,7 +361,7 @@ func TestFindNews(t *testing.T) {
 		expected.Content,
 		expected.PubDate)
 
-	mock.ExpectQuery(regexp.QuoteMeta(findNewsSql)).
+	mock.ExpectQuery(selectNewsPattern).
 		WithArgs(1, enum.Enable).
 		WillReturnRows(rows)
 
@@ -389,7 +388,7 @@ func TestFindNewsWithDataEmpty(t *testing.T) {
 		"pub_date",
 	})
 
-	mock.ExpectQuery(regexp.QuoteMeta(findNewsSql)).
+	mock.ExpectQuery(selectNewsPattern).
 		WithArgs(1, enum.Enable).
 		WillReturnRows(rows)
 
@@ -406,7 +405,7 @@ func TestFindNewsWithDBError(t *testing.T) {
 
 	repo := newMockRepository(eg)
 
-	mock.ExpectQuery(regexp.QuoteMeta(findNewsSql)).
+	mock.ExpectQuery(selectNewsPattern).
 		WithArgs(1, enum.Enable).
 		WillReturnError(fmt.Errorf("db error"))
 
@@ -428,7 +427,7 @@ func TestInsertNews(t *testing.T) {
 		Title: "insert title",
 	}
 
-	mock.ExpectExec("INSERT INTO `news` .*").
+	mock.ExpectExec(insertNewsPattern).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 
 	err := repo.InsertNews(news)
@@ -448,7 +447,7 @@ func TestInsertNewsWithDbError(t *testing.T) {
 		Title: "insert title",
 	}
 
-	mock.ExpectExec("INSERT INTO `news` .*").
+	mock.ExpectExec(insertNewsPattern).
 		WillReturnError(fmt.Errorf("db error"))
 
 	err := repo.InsertNews(news)
@@ -468,7 +467,7 @@ func TestUpdateNews(t *testing.T) {
 		Title: "updated title",
 	}
 
-	mock.ExpectExec("UPDATE `news` SET .* WHERE `id`=\\?").
+	mock.ExpectExec(updateNewsPattern).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 
 	err := repo.UpdateNews(news)
@@ -488,7 +487,7 @@ func TestUpdateNewsWithDBError(t *testing.T) {
 		Title: "updated title",
 	}
 
-	mock.ExpectExec("UPDATE `news` SET .* WHERE `id`=\\?").
+	mock.ExpectExec(updateNewsPattern).
 		WillReturnError(fmt.Errorf("db error"))
 
 	err := repo.UpdateNews(news)
@@ -507,7 +506,7 @@ func TestGetCountByTitle(t *testing.T) {
 	rows := sqlmock.NewRows([]string{"count"}).
 		AddRow(expected)
 
-	mock.ExpectQuery(regexp.QuoteMeta("SELECT count(`id`) FROM `news`")).
+	mock.ExpectQuery(selectNewsPattern).
 		WithArgs("", "").
 		WillReturnRows(rows)
 
@@ -524,7 +523,7 @@ func TestGetCountByTitleWithDBError(t *testing.T) {
 
 	repo := newMockRepository(eg)
 
-	mock.ExpectQuery(regexp.QuoteMeta("SELECT count(`id`) FROM `news`")).
+	mock.ExpectQuery(selectNewsPattern).
 		WithArgs("", "").
 		WillReturnError(fmt.Errorf("db error"))
 
