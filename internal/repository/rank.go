@@ -8,6 +8,10 @@ import (
 	"go.uber.org/zap"
 )
 
+type RankRepository interface {
+	GetRankDate(t enum.RankType) (model.SportRank, error)
+}
+
 // GetRankDate
 // 取得指定類型最新排行榜資料
 func (repo *Repository) GetRankDate(t enum.RankType) (model.SportRank, error) {

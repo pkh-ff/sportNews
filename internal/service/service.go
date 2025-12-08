@@ -8,6 +8,8 @@ import (
 
 type Serv struct {
 	Repo      *repository.Repository
+	NewsRepo  repository.NewsRepository
+	RankRepo  repository.RankRepository
 	VideoRepo repository.VideoRepository
 }
 
@@ -16,6 +18,8 @@ func New(db *xorm.EngineGroup) *Serv {
 
 	return &Serv{
 		Repo:      &repo,
+		NewsRepo:  &repo,
+		RankRepo:  &repo,
 		VideoRepo: &repo,
 	}
 }

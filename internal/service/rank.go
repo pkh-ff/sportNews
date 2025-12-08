@@ -15,7 +15,7 @@ import (
 func (s *Serv) GetRankData(t enum.RankType) (interface{}, error) {
 	log.Info("GetRankData: Start fetching rank data", zap.String("rankType", string(t)))
 
-	data, err := s.Repo.GetRankDate(t)
+	data, err := s.RankRepo.GetRankDate(t)
 	if err != nil {
 		log.Error("GetRankData: Failed to fetch rank data from repository", zap.Error(err), zap.String("rankType", string(t)))
 		return nil, err
