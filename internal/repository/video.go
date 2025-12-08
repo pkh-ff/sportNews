@@ -8,6 +8,10 @@ import (
 	"go.uber.org/zap"
 )
 
+type VideoRepository interface {
+	VideoList(limit int) ([]model.Video, error)
+}
+
 // VideoList
 // 隨機取得指定筆數影片列表
 func (repo *Repository) VideoList(limit int) ([]model.Video, error) {

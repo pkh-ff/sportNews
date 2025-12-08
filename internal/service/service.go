@@ -7,13 +7,15 @@ import (
 )
 
 type Serv struct {
-	Repo *repository.Repository
+	Repo      *repository.Repository
+	VideoRepo repository.VideoRepository
 }
 
 func New(db *xorm.EngineGroup) *Serv {
 	repo := repository.New(db)
 
 	return &Serv{
-		Repo: &repo,
+		Repo:      &repo,
+		VideoRepo: &repo,
 	}
 }
