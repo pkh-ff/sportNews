@@ -9,6 +9,12 @@ import (
 	"xorm.io/xorm"
 )
 
+type NewsRepository interface {
+	QueryNewsByPage(limit, start int) ([]model.News, error)
+	QueryNewsCount() (int64, error)
+	FindNews(id int) (model.News, error)
+}
+
 // GetNoCoverNews
 // 取得還沒有同步封面新聞列表
 func (repo *Repository) GetNoCoverNews() ([]model.News, error) {

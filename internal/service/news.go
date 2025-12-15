@@ -14,7 +14,7 @@ import (
 func (s *Serv) QueryNews(page, size int) (api.NewsPageResp, error) {
 	log.Info("QueryNews: Start fetching news list", zap.Int("page", page), zap.Int("size", size))
 	start := (page - 1) * size
-	news, err := s.Repo.QueryNewsByPage(size, start)
+	news, err := s.NewsRepo.QueryNewsByPage(size, start)
 	if err != nil {
 		log.Error("QueryNews: Failed to fetch news from database", zap.Error(err))
 		return api.NewsPageResp{}, err
@@ -42,7 +42,7 @@ func (s *Serv) QueryNews(page, size int) (api.NewsPageResp, error) {
 	}
 	log.Info("QueryNews: News data processed", zap.Int("newsDataCount", len(data)))
 
-	count, err := s.Repo.QueryNewsCount()
+	count, err := s.NewsRepo.QueryNewsCount()
 	if err != nil {
 		log.Error("QueryNews: Failed to fetch news count from database", zap.Error(err))
 		return api.NewsPageResp{}, err
@@ -65,7 +65,7 @@ func (s *Serv) QueryNews(page, size int) (api.NewsPageResp, error) {
 // 取得新聞詳情
 func (s *Serv) FindNews(id int) (api.NewsDetail, error) {
 	log.Info("FindNews: Start fetching news details", zap.Int("id", id))
-	data, err := s.Repo.FindNews(id)
+	data, err := s.NewsRepo.FindNews(id)
 	if err != nil {
 		log.Error("FindNews: Failed to fetch news details from database", zap.Int("id", id), zap.Error(err))
 		return api.NewsDetail{}, err
