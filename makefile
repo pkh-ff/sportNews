@@ -1,4 +1,5 @@
-include .env
+-include .env
+
 export
 
 VERSION ?= 0.0.1
@@ -52,3 +53,7 @@ stop:
 
 migrations:
 	docker run --rm -v ${PROJECT_PATH}/migration/sql:/flyway/sql flyway/flyway -url=jdbc:mysql://${DB_HOST}:3306/longmen_member -user=${DB_USERNAME} -password=${DB_PASSWORD} migrate
+
+cover:
+	go test ./... -coverprofile=coverage.out
+	go tool cover -html=coverage.out -o coverage.html

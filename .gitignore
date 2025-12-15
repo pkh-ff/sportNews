@@ -201,3 +201,5 @@ logs/
 main
 mian.exe
 go.mod
+coverage.html
+coverage.out
