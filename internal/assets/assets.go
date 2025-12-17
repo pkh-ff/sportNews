@@ -16,7 +16,7 @@ func Setup(assets string) {
 }
 
 // FullAssetsPath
-// assets 1完整連結
+// assets 完整連結
 func FullAssetsPath(p string) string {
 	if p == "" {
 		return ""
