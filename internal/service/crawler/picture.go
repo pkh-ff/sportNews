@@ -25,7 +25,7 @@ func NewStoryFile(db *xorm.EngineGroup, s3Client *s3.Client, bucket string, acl 
 	repo := repository.New(db)
 
 	return &StoryFile{
-		Repo:     &repo,
+		Repo:     repo,
 		S3Client: s3Client,
 		Bucket:   bucket,
 		Acl:      acl,

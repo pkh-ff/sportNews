@@ -25,7 +25,7 @@ func NewEspncricinfoServ(db *xorm.EngineGroup) *EspncricinfoServ {
 
 	return &EspncricinfoServ{
 		Serv: &Serv{
-			Repo:   &repo,
+			Repo:   repo,
 			Source: "espncricinfo",
 		},
 		Domain: "",

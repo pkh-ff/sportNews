@@ -110,7 +110,7 @@ func newServ(db *xorm.EngineGroup, source string) *Serv {
 	repo := repository.New(db)
 
 	return &Serv{
-		Repo:   &repo,
+		Repo:   repo,
 		Source: source,
 	}
 }
