@@ -47,13 +47,8 @@ func TestCloseWithDBError(t *testing.T) {
 }
 
 func TestCloseWithNilDB(t *testing.T) {
-	repo := Repository{
-		db:  nil,
-		idx: 0,
-	}
-
+	repo := Repository{eg: nil}
 	err := repo.Close()
-
 	require.NoError(t, err)
 }
 
@@ -78,7 +73,12 @@ func newMockEngineGroup(t *testing.T) (*xorm.EngineGroup, sqlmock.Sqlmock) {
 }
 
 func newMockRepository(eg *xorm.EngineGroup) *Repository {
-	r := New(eg)
+	return New(eg)
+}
 
-	return &r
+func (r *Repository) Close() error {
+	if r.eg == nil {
+		return nil
+	}
+	return r.eg.Close()
 }

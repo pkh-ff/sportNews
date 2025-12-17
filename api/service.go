@@ -30,7 +30,6 @@ func New(ctx context.Context, conf *conf.App, db *xorm.EngineGroup) *Server {
 
 	e := engine(conf.Debug)
 	app.router(e)
-	app.Serv.Repo.NewDBSession()
 	addr := fmt.Sprintf(":%s", conf.Addr)
 	h := &http.Server{
 		Addr:         addr,

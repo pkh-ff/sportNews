@@ -17,11 +17,11 @@ type NewsRepository interface {
 
 // GetNoCoverNews
 // 取得還沒有同步封面新聞列表
-func (repo *Repository) GetNoCoverNews() ([]model.News, error) {
+func (r *Repository) GetNoCoverNews() ([]model.News, error) {
 	log.Info("GetNoCoverNews: Start fetching news")
 
 	limit := 500
-	sess := repo.db.Where("status = ?", enum.Enable).And("cover IS NULL OR cover = ?", "")
+	sess := r.exec.Where("status = ?", enum.Enable).And("cover IS NULL OR cover = ?", "")
 	var news = make([]model.News, 0)
 	err := sess.OrderBy("pub_date DESC").Limit(limit).Find(&news)
 	if err != nil {
@@ -35,11 +35,11 @@ func (repo *Repository) GetNoCoverNews() ([]model.News, error) {
 
 // GetNoCoverCustomNews
 // 取得還沒有設置自定義封面新聞列表
-func (repo *Repository) GetNoCoverCustomNews() ([]model.News, error) {
+func (r *Repository) GetNoCoverCustomNews() ([]model.News, error) {
 	log.Info("GetNoCoverCustomNews: Start fetching news")
 
 	limit := 500
-	sess := repo.db.Where("status = ?", enum.Enable).And("cover_custom IS NULL OR cover_custom = ?", "")
+	sess := r.exec.Where("status = ?", enum.Enable).And("cover_custom IS NULL OR cover_custom = ?", "")
 	var news = make([]model.News, 0)
 	err := sess.OrderBy("update_at DESC, id DESC").Limit(limit).Find(&news)
 	if err != nil {
@@ -53,10 +53,10 @@ func (repo *Repository) GetNoCoverCustomNews() ([]model.News, error) {
 
 // GetLastUpdateCoverCustomNews
 // 取得最後更新cover_custom欄位資料
-func (repo *Repository) GetLastUpdateCoverCustomNews() (model.News, error) {
+func (r *Repository) GetLastUpdateCoverCustomNews() (model.News, error) {
 	log.Info("GetLastUpdateCoverCustomNews: Start fetching news")
 	var news model.News
-	found, err := repo.db.Cols("cover_custom").
+	found, err := r.exec.Cols("cover_custom").
 		Where("status = ?", enum.Enable).
 		And("cover_custom IS NOT NULL").
 		And("cover_custom != ?", "").
@@ -75,10 +75,10 @@ func (repo *Repository) GetLastUpdateCoverCustomNews() (model.News, error) {
 
 // QueryNewsByPage
 // 分頁取得新聞列表
-func (repo *Repository) QueryNewsByPage(limit, start int) ([]model.News, error) {
+func (r *Repository) QueryNewsByPage(limit, start int) ([]model.News, error) {
 	log.Info("QueryNewsByPage: Start fetching news", zap.Int("limit", limit), zap.Int("start", start))
 	cols := []string{"id", "title", "description", "cover", "cover_source", "cover_custom", "pub_date"}
-	sess := repo.queryNews(cols)
+	sess := r.queryNews(cols)
 
 	var news = make([]model.News, 0)
 	err := sess.OrderBy("pub_date DESC").Limit(limit, start).Find(&news)
@@ -93,9 +93,9 @@ func (repo *Repository) QueryNewsByPage(limit, start int) ([]model.News, error) 
 
 // QueryNewsCount
 // 取得所有有效新聞筆數
-func (repo *Repository) QueryNewsCount() (int64, error) {
+func (r *Repository) QueryNewsCount() (int64, error) {
 	log.Info("QueryNewsCount: Start counting news")
-	sess := repo.queryNews([]string{"id"})
+	sess := r.queryNews([]string{"id"})
 
 	var news = model.News{}
 	count, err := sess.Count(&news)
@@ -110,10 +110,10 @@ func (repo *Repository) QueryNewsCount() (int64, error) {
 
 // FindNews
 // 取得新聞詳情
-func (repo *Repository) FindNews(id int) (model.News, error) {
+func (r *Repository) FindNews(id int) (model.News, error) {
 	log.Info("FindNews: Start fetching news details", zap.Int("id", id))
 	cols := []string{"title", "description", "cover", "cover_source", "cover_custom", "content", "pub_date"}
-	sess := repo.db.Cols(cols...)
+	sess := r.exec.Cols(cols...)
 	sess.Where("id = ?", id).And("status = ?", enum.Enable)
 
 	var data model.News
@@ -134,9 +134,9 @@ func (repo *Repository) FindNews(id int) (model.News, error) {
 
 // InsertNews
 // 寫入新聞
-func (repo *Repository) InsertNews(m model.News) error {
+func (r *Repository) InsertNews(m model.News) error {
 	log.Info("InsertNews: Start inserting news", zap.Any("news", m))
-	_, err := repo.db.Insert(m)
+	_, err := r.exec.Insert(m)
 	if err != nil {
 		log.Error("InsertNews: Failed to insert news", zap.Any("news", m), zap.Error(err))
 		return err
@@ -148,9 +148,9 @@ func (repo *Repository) InsertNews(m model.News) error {
 
 // UpdateNews
 // 更新DB中新聞資料
-func (repo *Repository) UpdateNews(m model.News) error {
+func (r *Repository) UpdateNews(m model.News) error {
 	log.Info("UpdateNews: Start updating news", zap.Any("news", m))
-	_, err := repo.db.ID(m.Id).Update(&m)
+	_, err := r.exec.ID(m.Id).Update(&m)
 	if err != nil {
 		log.Error("UpdateNews,  Failed to update news", zap.Int32("id", m.Id), zap.Error(err))
 		return err
@@ -159,11 +159,11 @@ func (repo *Repository) UpdateNews(m model.News) error {
 	return nil
 }
 
-func (repo *Repository) GetCountByTitle(title, source string) (int64, error) {
+func (r *Repository) GetCountByTitle(title, source string) (int64, error) {
 	log.Info("GetCountByTitle: Start counting news by title and source", zap.String("title", title), zap.String("source", source))
 	var news = model.News{}
 
-	sess := repo.db.Cols([]string{"id"}...)
+	sess := r.exec.Cols([]string{"id"}...)
 	sess.Where("title = ?", title).And("source = ?", source)
 
 	count, err := sess.Count(&news)
@@ -176,11 +176,11 @@ func (repo *Repository) GetCountByTitle(title, source string) (int64, error) {
 	return count, nil
 }
 
-func (repo *Repository) queryNews(cols []string) *xorm.Session {
+func (r *Repository) queryNews(cols []string) *xorm.Session {
 	if len(cols) == 0 {
 		cols = []string{"*"}
 	}
-	sess := repo.db.Cols(cols...)
+	sess := r.exec.Cols(cols...)
 	sess.Where("status = ?", enum.Enable)
 
 	return sess

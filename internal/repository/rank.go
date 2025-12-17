@@ -14,10 +14,10 @@ type RankRepository interface {
 
 // GetRankDate
 // 取得指定類型最新排行榜資料
-func (repo *Repository) GetRankDate(t enum.RankType) (model.SportRank, error) {
+func (r *Repository) GetRankDate(t enum.RankType) (model.SportRank, error) {
 	log.Info("GetRankDate: Fetching latest rank data", zap.Any("type", t))
 	cols := []string{"data"}
-	sess := repo.db.Cols(cols...)
+	sess := r.exec.Cols(cols...)
 	sess.Where("type = ?", t)
 
 	var data model.SportRank
@@ -33,9 +33,9 @@ func (repo *Repository) GetRankDate(t enum.RankType) (model.SportRank, error) {
 
 // InsertRank
 // 寫入排行榜資料
-func (repo *Repository) InsertRank(m model.SportRank) error {
+func (r *Repository) InsertRank(m model.SportRank) error {
 	log.Info("InsertRank: Inserting rank data", zap.Any("rankData", m))
-	_, err := repo.db.Insert(m)
+	_, err := r.exec.Insert(m)
 	if err != nil {
 		log.Error("InsertRank: Error inserting rank data", zap.Error(err), zap.Any("rankData", m))
 		return err
@@ -47,10 +47,10 @@ func (repo *Repository) InsertRank(m model.SportRank) error {
 
 // GetOldestRankDataByType
 // 以type為條件取得最舊一筆資料
-func (repo *Repository) GetOldestRankDataByType(t enum.RankType) (model.SportRank, error) {
+func (r *Repository) GetOldestRankDataByType(t enum.RankType) (model.SportRank, error) {
 	log.Info("GetOldestRankDataByType: Fetching oldest rank data", zap.Any("type", t))
 	var data model.SportRank
-	_, err := repo.db.Cols("id").
+	_, err := r.exec.Cols("id").
 		Where("type = ?", t).
 		OrderBy("date ASC").
 		Get(&data)
@@ -65,9 +65,9 @@ func (repo *Repository) GetOldestRankDataByType(t enum.RankType) (model.SportRan
 
 // GetRankDataCountByType
 // 以type作為條件取得資料量
-func (repo *Repository) GetRankDataCountByType(t enum.RankType) (int64, error) {
+func (r *Repository) GetRankDataCountByType(t enum.RankType) (int64, error) {
 	log.Info("GetRankDataCountByType: Fetching rank data count", zap.Any("type", t))
-	count, err := repo.db.
+	count, err := r.exec.
 		Where("type = ?", t).
 		Count(&model.SportRank{})
 	if err != nil {
@@ -81,9 +81,9 @@ func (repo *Repository) GetRankDataCountByType(t enum.RankType) (int64, error) {
 
 // CheckRankDataExist
 // 檢查資料是否存在
-func (repo *Repository) CheckRankDataExist(date string, t enum.RankType) (bool, error) {
+func (r *Repository) CheckRankDataExist(date string, t enum.RankType) (bool, error) {
 	log.Info("CheckRankDataExist: Checking if rank data exists", zap.String("date", date), zap.Any("type", t))
-	exist, err := repo.db.
+	exist, err := r.exec.
 		Where("type = ?", t).
 		And("date = ?", date).
 		Exist(&model.SportRank{})
@@ -98,9 +98,9 @@ func (repo *Repository) CheckRankDataExist(date string, t enum.RankType) (bool, 
 
 // DeleteRankData
 // 刪除排行榜資料
-func (repo *Repository) DeleteRankData(m model.SportRank) (bool, error) {
+func (r *Repository) DeleteRankData(m model.SportRank) (bool, error) {
 	log.Info("DeleteRankData: Deleting rank data", zap.Any("rankData", m))
-	_, err := repo.db.Delete(m)
+	_, err := r.exec.Delete(m)
 	if err != nil {
 		log.Error("DeleteRankData: Error deleting rank data", zap.Error(err), zap.Any("rankData", m))
 		return false, err

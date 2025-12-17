@@ -1,39 +1,41 @@
 package repository
 
 import (
-	"sportNews/pkg/log"
-
-	"go.uber.org/zap"
 	"xorm.io/xorm"
 )
 
 type Repository struct {
-	idx int
-	db  *xorm.EngineGroup
+	idx  int
+	eg   *xorm.EngineGroup
+	exec xorm.Interface
 }
 
-func New(db *xorm.EngineGroup) Repository {
-	return Repository{
-		db: db,
+func New(db *xorm.EngineGroup) *Repository {
+	return &Repository{
+		eg:   db,
+		exec: db,
 	}
 }
 
-func (repo Repository) NewDBSession() *xorm.Session {
-	log.Info("NewDBSession: Creating a new DB session", zap.Int("repositoryIdx", repo.idx))
-	return repo.db.NewSession()
+func (r *Repository) withSession(s *xorm.Session) *Repository {
+	rr := *r
+	rr.exec = s
+	return &rr
 }
 
-func (repo Repository) Close() (err error) {
-	if repo.db != nil {
-		log.Info("NewDBSession: Creating a new DB session", zap.Int("repositoryIdx", repo.idx))
-		if err = repo.db.Close(); err != nil {
-			log.Error("Close: Failed to close database connection", zap.Int("repositoryIdx", repo.idx), zap.Error(err))
-		} else {
-			log.Infof("Close: Successfully closed the database connection for Repository(%d)", repo.idx)
-		}
-	} else {
-		log.Warn("Close: Repository database connection is already nil", zap.Int("repositoryIdx", repo.idx))
+func (r *Repository) InTx(fn func(tx *Repository) error) error {
+	s := r.eg.NewSession()
+	defer s.Close()
+
+	if err := s.Begin(); err != nil {
+		return err
 	}
 
-	return err
+	txRepo := r.withSession(s)
+
+	if err := fn(txRepo); err != nil {
+		_ = s.Rollback()
+		return err
+	}
+	return s.Commit()
 }
