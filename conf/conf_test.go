@@ -7,13 +7,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// 測試 http-server APP config是否符合格式
+// 測試 api-server APP config是否符合格式
 func TestAppConfNew(t *testing.T) {
 	conf, err := New("app.conf.example.yaml")
 
 	c := &Conf{
 		App: App{
-			Name:         "http-server",
+			Name:         "api-server",
 			Addr:         "9011",
 			Debug:        true,
 			ReadTimeout:  "10s",
