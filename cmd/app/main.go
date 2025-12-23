@@ -5,10 +5,10 @@ import (
 	"flag"
 	"os"
 	"os/signal"
-	"sportNews/api"
 	"sportNews/conf"
 	"sportNews/conf/database"
 	"sportNews/internal/assets"
+	"sportNews/internal/http"
 	"sportNews/pkg/log"
 	"syscall"
 	"time"
@@ -48,7 +48,7 @@ func main() {
 
 	assets.Setup(config.Assets)
 
-	serv := api.New(ctx, &config.App, db)
+	serv := http.New(ctx, &config.App, db)
 	serv.Run()
 
 	shutdown(config, db)

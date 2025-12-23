@@ -102,8 +102,8 @@ step1. build
 make build SERVICE=`<服務名稱>` VERSION=`<服務版號>`
 
 ```shell
-# 建構 api-server 0.0.1版本的Docker Image
-make build SERVICE=api-server VERSION=0.0.1
+# 建構 http-server 0.0.1版本的Docker Image
+make build SERVICE=http-server VERSION=0.0.1
 # 建構 crawler-server 0.0.1版本的Docker Image
 make build SERVICE=crawler-server VERSION=0.0.1
 ```
@@ -114,7 +114,7 @@ make push SERVICE=`<服務名稱>` VERSION=`<服務版號>`
 
 ```shell
 # 推送 Ver 0.0.1的api-server Docker Image
-make push SERVICE=api-server VERSION=0.0.1
+make push SERVICE=http-server VERSION=0.0.1
 # 推送 Ver 0.0.1的crawler-server Docker Image
 make push SERVICE=crawler-server VERSION=0.0.1
 ```
@@ -126,7 +126,7 @@ make run SERVICE=`<服務名稱>` VERSION=`<服務版號>`
 運行 API服務
 
 ```shell
-make run SERVICE=api-server VERSION=0.0.1 
+make run SERVICE=http-server VERSION=0.0.1 
 ```
 運行爬蟲服務
 

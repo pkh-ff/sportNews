@@ -1,5 +1,5 @@
 app:
-  name: api-server
+  name: http-server
   addr: 9011
   debug: true
   read_timeout: 10s
