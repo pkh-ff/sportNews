@@ -55,5 +55,6 @@ migrations:
 	docker run --rm -v ${PROJECT_PATH}/migration/sql:/flyway/sql flyway/flyway -url=jdbc:mysql://${DB_HOST}:3306/longmen_member -user=${DB_USERNAME} -password=${DB_PASSWORD} migrate
 
 cover:
+	PKGS=$(go list ./... | grep -v '/mocks')
 	go test ./... -coverprofile=coverage.out
 	go tool cover -html=coverage.out -o coverage.html

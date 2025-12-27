@@ -4,19 +4,21 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"sportNews/internal/assets"
 	"sportNews/internal/response"
+	"sportNews/internal/service"
 	"testing"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
 )
 
-func newMockTestRouter(t *testing.T) *gin.Engine {
+func newMockTestRouter(t *testing.T, serv *service.Serv) *gin.Engine {
 	t.Helper()
 
 	gin.SetMode(gin.TestMode)
 	e := gin.New()
-	App{}.router(e)
+	App{Serv: serv}.router(e)
 
 	return e
 }
@@ -31,8 +33,13 @@ func mockRequest(t *testing.T, e http.Handler, method, path string) *httptest.Re
 	return w
 }
 
+func setupAssets(t *testing.T) {
+	assets.Setup("https://cdn.test")
+	t.Cleanup(func() { assets.Setup("") })
+}
+
 func TestPageNotFound(t *testing.T) {
-	e := newMockTestRouter(t)
+	e := newMockTestRouter(t, nil)
 
 	w := mockRequest(t, e, http.MethodGet, "/notExistPath")
 
@@ -47,7 +54,7 @@ func TestPageNotFound(t *testing.T) {
 }
 
 func TestMethodNotAllowed(t *testing.T) {
-	e := newMockTestRouter(t)
+	e := newMockTestRouter(t, nil)
 
 	w := mockRequest(t, e, http.MethodPost, "/healthz")
 
@@ -62,7 +69,7 @@ func TestMethodNotAllowed(t *testing.T) {
 }
 
 func TestHealthzRouter(t *testing.T) {
-	e := newMockTestRouter(t)
+	e := newMockTestRouter(t, nil)
 
 	w := mockRequest(t, e, http.MethodGet, "/healthz")
 
