@@ -203,3 +203,4 @@ mian.exe
 go.mod
 coverage.html
 coverage.out
+.vscode

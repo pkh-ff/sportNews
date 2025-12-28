@@ -18,7 +18,7 @@ func NotFound() *HttpResp {
 
 // ParameterError 參數錯誤
 func ParameterError(errMsg []string) *HttpResp {
-	return newHttpException(http.StatusBadRequest, PARAMETER_ERROR, "Missing required parameter error or parameter setting error", errMsg)
+	return newHttpException(http.StatusBadRequest, PARAMETER_ERROR, "Missing required parameter error or parameter setting error", nil)
 }
 
 // InternalError Service Internal Error response

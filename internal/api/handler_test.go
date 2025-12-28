@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"sportNews/internal/assets"
+	"sportNews/internal/repository/mocks"
 	"sportNews/internal/response"
 	"sportNews/internal/service"
 	"testing"
@@ -13,11 +14,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func newMockTestRouter(t *testing.T, serv *service.Serv) *gin.Engine {
+func newMockTestRouter(t *testing.T, repo *mocks.MockNewsRepository) *gin.Engine {
 	t.Helper()
 
 	gin.SetMode(gin.TestMode)
 	e := gin.New()
+	
+	serv := &service.Serv{NewsRepo: repo}
 	App{Serv: serv}.router(e)
 
 	return e
