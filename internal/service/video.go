@@ -10,7 +10,7 @@ import (
 
 // GetVideoList
 // 取得指定筆數影片列表
-func (s *Serv) GetVideoList() (interface{}, error) {
+func (s *Serv) GetVideoList() ([]api.VideoResp, error) {
 	log.Info("GetVideoList: Start fetching video list")
 	videos, err := s.VideoRepo.VideoList(10)
 	if err != nil {

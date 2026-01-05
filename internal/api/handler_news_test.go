@@ -8,6 +8,7 @@ import (
 	"sportNews/internal/model/api"
 	"sportNews/internal/repository/mocks"
 	"sportNews/internal/response"
+	"sportNews/internal/service"
 	"testing"
 	"time"
 
@@ -32,26 +33,29 @@ func TestNewsRouter(t *testing.T) {
 	repo.EXPECT().QueryNewsByPage(15, 0).Return(data, nil).Times(1)
 	repo.EXPECT().QueryNewsCount().Return(int64(31), nil).Times(1)
 
-	e := newMockTestRouter(t, repo)
+	serv := &service.Serv{NewsRepo: repo}
+	e := newMockTestRouter(t, serv)
 	w := mockRequest(t, e, http.MethodGet, "/news")
 
 	var resp mockNewsSuccessResp
 	_ = json.Unmarshal(w.Body.Bytes(), &resp)
 
 	require.Equal(t, http.StatusOK, w.Code)
+	require.Equal(t, http.StatusOK, w.Code)
 	require.Equal(t, "success", resp.Msg)
+	require.Equal(t, response.SUCCESS, resp.Code)
 	require.Equal(t, int64(31), resp.Data.TotalCount)
 	require.Equal(t, 3, resp.Data.TotalPage)
-	require.Len(t, resp.Data.Records, 2)
+	require.Equal(t, len(data), len(resp.Data.Records))
 	for i, record := range resp.Data.Records {
-		data := data[i]
+		d := data[i]
 
-		require.Equal(t, data.Id, record.Id)
-		require.Equal(t, data.Title, record.Title)
-		require.Equal(t, data.Description, record.Description)
-		require.Equal(t, data.CoverSource, record.CoverSource)
-		require.Equal(t, getMockAssetsPath(t, data.Cover), record.Cover)
-		require.Equal(t, getMockAssetsPath(t, data.CoverCustom), record.CoverCustom)
+		require.Equal(t, d.Id, record.Id)
+		require.Equal(t, d.Title, record.Title)
+		require.Equal(t, d.Description, record.Description)
+		require.Equal(t, d.CoverSource, record.CoverSource)
+		require.Equal(t, getMockFullPath(t, d.Cover), record.Cover)
+		require.Equal(t, getMockFullPath(t, d.CoverCustom), record.CoverCustom)
 	}
 }
 
@@ -64,7 +68,8 @@ func TestNewsRouterWithQueryNewsByPageError(t *testing.T) {
 	repo := mocks.NewMockNewsRepository(ctrl)
 	repo.EXPECT().QueryNewsByPage(15, 0).Return(nil, errors.New("error")).Times(1)
 
-	e := newMockTestRouter(t, repo)
+	serv := &service.Serv{NewsRepo: repo}
+	e := newMockTestRouter(t, serv)
 	w := mockRequest(t, e, http.MethodGet, "/news")
 
 	var resp response.HttpResp
@@ -86,7 +91,8 @@ func TestNewsRouterWithQueryNewsCountError(t *testing.T) {
 	repo.EXPECT().QueryNewsByPage(15, 0).Return([]model.News{}, nil).Times(1)
 	repo.EXPECT().QueryNewsCount().Return(int64(31), errors.New("")).Times(1)
 
-	e := newMockTestRouter(t, repo)
+	serv := &service.Serv{NewsRepo: repo}
+	e := newMockTestRouter(t, serv)
 	w := mockRequest(t, e, http.MethodGet, "/news")
 
 	var resp response.HttpResp
@@ -114,7 +120,8 @@ func TestNewsByIdRouter(t *testing.T) {
 	repo := mocks.NewMockNewsRepository(ctrl)
 	repo.EXPECT().FindNews(gomock.Any()).Return(data, nil).Times(1)
 
-	e := newMockTestRouter(t, repo)
+	serv := &service.Serv{NewsRepo: repo}
+	e := newMockTestRouter(t, serv)
 	w := mockRequest(t, e, http.MethodGet, "/news/1")
 
 	var resp mockNewsDetailSuccessResp
@@ -122,11 +129,12 @@ func TestNewsByIdRouter(t *testing.T) {
 
 	require.Equal(t, http.StatusOK, w.Code)
 	require.Equal(t, "success", resp.Msg)
+	require.Equal(t, response.SUCCESS, resp.Code)
 	require.Equal(t, data.Title, resp.Data.Title)
 	require.Equal(t, data.Description, resp.Data.Description)
-	require.Equal(t, getMockAssetsPath(t, data.Cover), resp.Data.Cover)
+	require.Equal(t, getMockFullPath(t, data.Cover), resp.Data.Cover)
 	require.Equal(t, data.CoverSource, resp.Data.CoverSource)
-	require.Equal(t, getMockAssetsPath(t, data.CoverCustom), resp.Data.CoverCustom)
+	require.Equal(t, getMockFullPath(t, data.CoverCustom), resp.Data.CoverCustom)
 }
 
 func TestNewsByIdRouterWithData(t *testing.T) {
@@ -138,7 +146,8 @@ func TestNewsByIdRouterWithData(t *testing.T) {
 	repo := mocks.NewMockNewsRepository(ctrl)
 	repo.EXPECT().FindNews(gomock.Any()).Return(model.News{}, nil).Times(1)
 
-	e := newMockTestRouter(t, repo)
+	serv := &service.Serv{NewsRepo: repo}
+	e := newMockTestRouter(t, serv)
 	w := mockRequest(t, e, http.MethodGet, "/news/1")
 
 	var resp response.HttpResp
@@ -160,7 +169,8 @@ func TestNewsByIdRouterWithIdIllegal(t *testing.T) {
 	defer ctrl.Finish()
 
 	repo := mocks.NewMockNewsRepository(ctrl)
-	e := newMockTestRouter(t, repo)
+	serv := &service.Serv{NewsRepo: repo}
+	e := newMockTestRouter(t, serv)
 	w := mockRequest(t, e, http.MethodGet, "/news/aaa")
 
 	var resp response.HttpResp
@@ -179,7 +189,8 @@ func TestNewsByIdRouterWithIdIsZero(t *testing.T) {
 	defer ctrl.Finish()
 
 	repo := mocks.NewMockNewsRepository(ctrl)
-	e := newMockTestRouter(t, repo)
+	serv := &service.Serv{NewsRepo: repo}
+	e := newMockTestRouter(t, serv)
 	w := mockRequest(t, e, http.MethodGet, "/news/0")
 
 	var resp response.HttpResp
@@ -200,7 +211,8 @@ func TestNewsByIdRouterWithFindNewsError(t *testing.T) {
 	repo := mocks.NewMockNewsRepository(ctrl)
 	repo.EXPECT().FindNews(gomock.Any()).Return(model.News{}, errors.New("error")).Times(1)
 
-	e := newMockTestRouter(t, repo)
+	serv := &service.Serv{NewsRepo: repo}
+	e := newMockTestRouter(t, serv)
 	w := mockRequest(t, e, http.MethodGet, "/news/1")
 
 	var resp response.HttpResp
@@ -247,7 +259,7 @@ func mockNewsDetailResp() model.News {
 	}
 }
 
-func getMockAssetsPath(t *testing.T, path string) string {
+func getMockFullPath(t *testing.T, path string) string {
 	fullPath := "https://cdn.test/"
 	if path != "" {
 		fullPath = "https://cdn.test/" + path

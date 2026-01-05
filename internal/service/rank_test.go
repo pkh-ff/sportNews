@@ -53,17 +53,14 @@ func TestGetRankData(t *testing.T) {
 	}
 	result, err := s.GetRankData(enum.Test)
 
-	resp, ok := result.([]model.RankDetail)
-
 	require.NoError(t, err)
 	require.True(t, mockRepo.called)
 	assert.Equal(t, enum.Test, mockRepo.rankType)
 
-	require.True(t, ok)
-	require.Len(t, resp, len(details))
-	for i := range resp {
-		assert.Equal(t, details[i].Team, resp[i].Team)
-		assert.Contains(t, details[i].Icon, resp[i].Icon)
+	require.Len(t, result, len(details))
+	for i, r := range result {
+		assert.Equal(t, details[i].Team, r.Team)
+		assert.Contains(t, details[i].Icon, r.Icon)
 	}
 }
 
@@ -81,14 +78,10 @@ func TestGetRankDataWithEmpty(t *testing.T) {
 	}
 	result, err := s.GetRankData(enum.Test)
 
-	resp, ok := result.([]model.RankDetail)
-
 	require.NoError(t, err)
 	require.True(t, mockRepo.called)
 	assert.Equal(t, enum.Test, mockRepo.rankType)
-
-	require.True(t, ok)
-	require.Len(t, resp, 0)
+	require.Len(t, result, 0)
 }
 
 func TestGetRankDataWithDBError(t *testing.T) {

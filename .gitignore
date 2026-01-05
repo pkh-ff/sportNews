@@ -200,7 +200,5 @@ process.conf.yaml
 logs/
 main
 mian.exe
-go.mod
-coverage.html
-coverage.out
 .vscode
+docs/cover/

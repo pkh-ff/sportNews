@@ -3,7 +3,6 @@ package service
 import (
 	"fmt"
 	"sportNews/internal/model"
-	"sportNews/internal/model/api"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -48,18 +47,14 @@ func TestGetVideoList(t *testing.T) {
 	result, err := s.GetVideoList()
 
 	require.NoError(t, err)
-
-	resp, ok := result.([]api.VideoResp)
-	require.True(t, ok)
-	require.Len(t, resp, len(videos))
+	require.Len(t, result, len(videos))
 	assert.Equal(t, 10, mockRepo.limit)
 	assert.Nil(t, err)
-	for i := range videos {
-		assert.Equal(t, videos[i].Title, resp[i].Title)
-		assert.Equal(t, videos[i].Description, resp[i].Description)
-
-		assert.Contains(t, resp[i].Cover, videos[i].Cover)
-		assert.Contains(t, resp[i].Link, videos[i].Link)
+	for i, v := range videos {
+		assert.Equal(t, v.Title, result[i].Title)
+		assert.Equal(t, v.Description, result[i].Description)
+		assert.Contains(t, result[i].Cover, v.Cover)
+		assert.Contains(t, result[i].Link, v.Link)
 	}
 }
 
@@ -75,10 +70,7 @@ func TestGetVideoListWithEmpty(t *testing.T) {
 	result, err := s.GetVideoList()
 
 	require.NoError(t, err)
-
-	resp, ok := result.([]api.VideoResp)
-	require.True(t, ok)
-	require.Len(t, resp, 0)
+	require.Len(t, result, 0)
 	assert.Nil(t, err)
 	assert.Equal(t, 10, mockRepo.limit)
 }

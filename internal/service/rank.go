@@ -12,7 +12,7 @@ import (
 
 // GetRankData
 // 取得指定類型排行榜資料
-func (s *Serv) GetRankData(t enum.RankType) (interface{}, error) {
+func (s *Serv) GetRankData(t enum.RankType) ([]model.RankDetail, error) {
 	log.Info("GetRankData: Start fetching rank data", zap.String("rankType", string(t)))
 
 	data, err := s.RankRepo.GetRankDate(t)

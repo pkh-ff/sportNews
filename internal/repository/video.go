@@ -1,5 +1,7 @@
 package repository
 
+//go:generate mockgen -source=video.go -destination=mocks/video_repository_mock.go -package=mocks
+
 import (
 	"sportNews/internal/enum"
 	"sportNews/internal/model"
