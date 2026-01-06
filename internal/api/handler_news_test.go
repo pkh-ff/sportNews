@@ -169,6 +169,7 @@ func TestNewsByIdRouterWithIdIllegal(t *testing.T) {
 	defer ctrl.Finish()
 
 	repo := mocks.NewMockNewsRepository(ctrl)
+	
 	serv := &service.Serv{NewsRepo: repo}
 	e := newMockTestRouter(t, serv)
 	w := mockRequest(t, e, http.MethodGet, "/news/aaa")

@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"sportNews/internal/enum"
 	"sportNews/internal/model"
@@ -53,6 +54,44 @@ func TestRankRouter(t *testing.T) {
 		require.Equal(t, r.Points, record.Points)
 		require.Equal(t, getMockFullPath(t, r.Icon), record.Icon)
 	}
+}
+
+func TestRankRouterWithInvalidType(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	repo := mocks.NewMockRankRepository(ctrl)
+
+	serv := &service.Serv{RankRepo: repo}
+	e := newMockTestRouter(t, serv)
+	w := mockRequest(t, e, http.MethodGet, "/rank/invalidType")
+
+	var resp response.HttpResp
+	_ = json.Unmarshal(w.Body.Bytes(), &resp)
+
+	require.Equal(t, http.StatusBadRequest, w.Code)
+	require.Equal(t, "Missing required parameter error or parameter setting error", resp.Msg)
+	require.Equal(t, response.PARAMETER_ERROR, resp.Code)
+	require.Nil(t, resp.Data)
+}
+
+func TestRankRouterWithServiceError(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	repo := mocks.NewMockRankRepository(ctrl)
+	repo.EXPECT().GetRankDate(gomock.Any()).Return(model.SportRank{}, errors.New("db error")).Times(1)
+
+	serv := &service.Serv{RankRepo: repo}
+	e := newMockTestRouter(t, serv)
+	w := mockRequest(t, e, http.MethodGet, "/rank/test")
+
+	var resp response.HttpResp
+	_ = json.Unmarshal(w.Body.Bytes(), &resp)
+
+	require.Equal(t, http.StatusNotFound, w.Code)
+	require.Equal(t, response.NOT_FOUND, resp.Code)
+	require.Equal(t, http.StatusText(http.StatusNotFound), resp.Msg)
 }
 
 func mockRankData(t *testing.T) model.SportRank {
