@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"sportNews/internal/enum"
 	"sportNews/internal/model"
@@ -51,6 +52,27 @@ func TestVideoRouter(t *testing.T) {
 		require.Equal(t, getMockFullPath(t, d.Cover), record.Cover)
 		require.Equal(t, getMockFullPath(t, d.Link), record.Link)
 	}
+}
+
+func TestVideoRouterWithServiceError(t *testing.T) {
+	setupAssets(t)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	repo := mocks.NewMockVideoRepository(ctrl)
+	repo.EXPECT().VideoList(gomock.Any()).Return(nil, errors.New("db error")).Times(1)
+
+	serv := &service.Serv{VideoRepo: repo}
+	e := newMockTestRouter(t, serv)
+	w := mockRequest(t, e, http.MethodGet, "/video")
+
+	var resp response.HttpResp
+	_ = json.Unmarshal(w.Body.Bytes(), &resp)
+
+	require.Equal(t, http.StatusNotFound, w.Code)
+	require.Equal(t, response.NOT_FOUND, resp.Code)
+	require.Equal(t, http.StatusText(http.StatusNotFound), resp.Msg)
 }
 
 func mockVideoListData(t *testing.T) []model.Video {
