@@ -54,6 +54,10 @@ stop:
 migrations:
 	docker run --rm -v ${PROJECT_PATH}/migration/sql:/flyway/sql flyway/flyway -url=jdbc:mysql://${DB_HOST}:3306/longmen_member -user=${DB_USERNAME} -password=${DB_PASSWORD} migrate
 
+test:
+	@PKGS=$$(go list ./... | grep -v '/mocks' | grep -v '/logs' | tr '\n' ','); \
+	go test ./... -coverpkg="$${PKGS%,}"
+
 cover:
 	@mkdir -p ./docs/cover
 	@PKGS=$$(go list ./... | grep -v '/mocks' | grep -v '/logs' | tr '\n' ','); \

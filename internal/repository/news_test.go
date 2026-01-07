@@ -476,6 +476,26 @@ func TestUpdateNews(t *testing.T) {
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
+func TestUpdateNewsWithNoRowsAffected(t *testing.T) {
+	eg, mock := newMockEngineGroup(t)
+	defer eg.Close()
+
+	repo := newMockRepository(eg)
+
+	news := model.News{
+		Id:    99999,
+		Title: "updated title",
+	}
+
+	mock.ExpectExec(updateNewsPattern).
+		WillReturnResult(sqlmock.NewResult(0, 0))
+
+	err := repo.UpdateNews(news)
+
+	require.NoError(t, err)
+	require.NoError(t, mock.ExpectationsWereMet())
+}
+
 func TestUpdateNewsWithDBError(t *testing.T) {
 	eg, mock := newMockEngineGroup(t)
 	defer eg.Close()

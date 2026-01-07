@@ -42,6 +42,26 @@ func TestVideoList(t *testing.T) {
 	}
 }
 
+func TestVideoListWithNoData(t *testing.T) {
+	eq, mock := newMockEngineGroup(t)
+	defer eq.Close()
+
+	repo := newMockRepository(eq)
+
+	limit := 0
+	expected := make([]model.Video, limit)
+
+	mock.ExpectQuery(selectVideoPattern).
+		WithArgs(enum.Enable).
+		WillReturnRows(videosToRows(expected))
+
+	actual, err := repo.VideoList(limit)
+
+	require.NoError(t, err)
+	require.NoError(t, mock.ExpectationsWereMet())
+	require.Equal(t, len(expected), len(actual))
+}
+
 func TestVideoListWithDBError(t *testing.T) {
 	eg, mock := newMockEngineGroup(t)
 	defer eg.Close()

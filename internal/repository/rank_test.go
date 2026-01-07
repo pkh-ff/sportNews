@@ -315,6 +315,28 @@ func TestDeleteRankData(t *testing.T) {
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
+func TestDeleteRankDataWithNoRowsAffected(t *testing.T) {
+	eg, mock := newMockEngineGroup(t)
+	defer eg.Close()
+
+	repo := newMockRepository(eg)
+
+	rank := model.SportRank{
+		Id:   1,
+		Type: enum.Test,
+		Data: `{"rank":"some-json-data"}`,
+	}
+
+	mock.ExpectExec(deleteRankPattern).
+		WillReturnResult(sqlmock.NewResult(0, 0))
+
+	ok, err := repo.DeleteRankData(rank)
+
+	require.NoError(t, err)
+	require.True(t, ok)
+	require.NoError(t, mock.ExpectationsWereMet())
+}
+
 func TestDeleteRankDataWithDBError(t *testing.T) {
 	eg, mock := newMockEngineGroup(t)
 	defer eg.Close()
