@@ -12,6 +12,11 @@ import (
 
 type RankRepository interface {
 	GetRankDate(t enum.RankType) (model.SportRank, error)
+	InsertRank(m model.SportRank) error
+	GetOldestRankDataByType(t enum.RankType) (model.SportRank, error)
+	GetRankDataCountByType(t enum.RankType) (int64, error)
+	CheckRankDataExist(date string, t enum.RankType) (bool, error)
+	DeleteRankData(m model.SportRank) (bool, error)
 }
 
 // GetRankDate

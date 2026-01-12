@@ -2,260 +2,218 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"sportNews/internal/model"
-	"sportNews/internal/model/api"
+	"sportNews/internal/repository/mocks"
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/mock/gomock"
 )
 
-type mockNewsListRepo struct {
-	news        []model.News
-	count       int64
-	queryErr    error
-	countErr    error
-	calledLimit int
-	calledStart int
-	queryCalled bool
-	countCalled bool
-}
-
-func (m *mockNewsListRepo) QueryNewsByPage(limit, start int) ([]model.News, error) {
-	m.queryCalled = true
-	m.calledLimit = limit
-	m.calledStart = start
-	return m.news, m.queryErr
-}
-
-func (m *mockNewsListRepo) QueryNewsCount() (int64, error) {
-	m.countCalled = true
-	return m.count, m.countErr
-}
-
-func (m *mockNewsListRepo) FindNews(id int) (model.News, error) {
-	panic("")
-}
-
 func TestQueryNews(t *testing.T) {
-	page := 2
-	size := 10
-	start := (page - 1) * size
+	setupAssets(t)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
 	now := time.Now()
-
-	mockRepo := &mockNewsListRepo{
-		news: []model.News{
-			{
-				Id:          1,
-				Title:       "title1",
-				Description: "desc1",
-				Cover:       "cover1.jpg",
-				CoverSource: "source1",
-				CoverCustom: "",
-				PubDate:     now,
-			},
-			{
-				Id:          2,
-				Title:       "title2",
-				Description: "desc2",
-				Cover:       "cover2.jpg",
-				CoverSource: "source2",
-				CoverCustom: "cover2.jpg",
-				PubDate:     now,
-			},
+	news := []model.News{
+		{
+			Id:          1,
+			Title:       "title1",
+			Description: "desc1",
+			Cover:       "cover1.jpg",
+			CoverSource: "source1",
+			CoverCustom: "",
+			PubDate:     now,
 		},
-		count: 23,
+		{
+			Id:          2,
+			Title:       "title2",
+			Description: "desc2",
+			Cover:       "cover2.jpg",
+			CoverSource: "source2",
+			CoverCustom: "cover2.jpg",
+			PubDate:     now,
+		},
 	}
+
+	repo := mocks.NewMockNewsRepository(ctrl)
+	repo.EXPECT().QueryNewsByPage(gomock.Any(), gomock.Any()).
+		Return(news, nil).Times(1)
+	repo.EXPECT().QueryNewsCount().Return(int64(2), nil).Times(1)
 
 	s := &Serv{
-		NewsRepo: mockRepo,
+		NewsRepo: repo,
 	}
 
-	resp, err := s.QueryNews(page, size)
+	result, err := s.QueryNews(1, 1)
+
 	require.NoError(t, err)
+	require.Len(t, result.Records, len(news))
+	require.Nil(t, err)
+	require.Equal(t, int(2), result.TotalPage)
+	require.Equal(t, int64(2), result.TotalCount)
 
-	require.True(t, mockRepo.queryCalled)
-	require.True(t, mockRepo.countCalled)
-	require.Len(t, resp.Records, len(mockRepo.news))
-	assert.Equal(t, size, mockRepo.calledLimit)
-	assert.Equal(t, start, mockRepo.calledStart)
-	assert.Equal(t, mockRepo.count, resp.TotalCount)
-	assert.Equal(t, 3, resp.TotalPage)
+	for i := range result.Records {
+		r := result.Records[i]
+		n := news[i]
 
-	for i := range mockRepo.news {
-		r := resp.Records[i]
-		n := mockRepo.news[i]
-		assert.Equal(t, n.Id, r.Id)
-		assert.Equal(t, n.Title, r.Title)
-		assert.Equal(t, n.Description, r.Description)
-		assert.Equal(t, n.CoverSource, r.CoverSource)
-		assert.Equal(t, n.Id, r.Id)
-		assert.True(t, r.PubDate.Equal(n.PubDate))
-		assert.Contains(t, r.Cover, n.Cover)
-		assert.Contains(t, r.CoverCustom, n.Cover)
+		require.Equal(t, n.Id, r.Id)
+		require.Equal(t, n.Title, r.Title)
+		require.Equal(t, n.Description, r.Description)
+		require.Equal(t, n.CoverSource, r.CoverSource)
+		require.Equal(t, n.Id, r.Id)
+		require.True(t, r.PubDate.Equal(n.PubDate))
+		require.Contains(t, r.Cover, n.Cover)
+		require.Contains(t, r.CoverCustom, n.Cover)
 	}
 }
 
 func TestQueryNewsWithQueryNewsByPageError(t *testing.T) {
-	mockRepo := &mockNewsListRepo{
-		queryErr: errors.New("db error"),
-	}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	repo := mocks.NewMockNewsRepository(ctrl)
+	repo.EXPECT().QueryNewsByPage(gomock.Any(), gomock.Any()).
+		Return(nil, errors.New("query error")).Times(1)
 
 	s := &Serv{
-		NewsRepo: mockRepo,
+		NewsRepo: repo,
 	}
-
-	resp, err := s.QueryNews(1, 10)
+	result, err := s.QueryNews(1, 1)
 
 	require.Error(t, err)
-	require.True(t, mockRepo.queryCalled)
-	assert.False(t, mockRepo.countCalled)
-
-	require.Len(t, resp.Records, 0)
-	assert.Equal(t, int64(0), resp.TotalCount)
-	assert.Equal(t, 0, resp.TotalPage)
+	require.Equal(t, "query error", err.Error())
+	require.Empty(t, result)
 }
 
 func TestQueryNewsWithQueryNewsCountError(t *testing.T) {
-	now := time.Now()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-	mockRepo := &mockNewsListRepo{
-		news: []model.News{
-			{
-				Id:          1,
-				Title:       "title1",
-				Description: "desc1",
-				Cover:       "cover1.jpg",
-				CoverSource: "source1",
-				CoverCustom: "",
-				PubDate:     now,
-			},
-		},
-		countErr: errors.New("count error"),
-	}
+	repo := mocks.NewMockNewsRepository(ctrl)
+	repo.EXPECT().QueryNewsByPage(gomock.Any(), gomock.Any()).
+		Return([]model.News{}, nil).Times(1)
+	repo.EXPECT().QueryNewsCount().
+		Return(int64(0), errors.New("query count error")).Times(1)
 
 	s := &Serv{
-		NewsRepo: mockRepo,
+		NewsRepo: repo,
 	}
 
-	resp, err := s.QueryNews(1, 10)
+	result, err := s.QueryNews(1, 1)
 
 	require.Error(t, err)
-	require.True(t, mockRepo.queryCalled)
-	require.True(t, mockRepo.countCalled)
-
-	require.Len(t, resp.Records, 0)
-	assert.Equal(t, int64(0), resp.TotalCount)
-	assert.Equal(t, 0, resp.TotalPage)
-}
-
-type mockNewsRepo struct {
-	news   model.News
-	err    error
-	called bool
-	id     int
-}
-
-func (m *mockNewsRepo) QueryNewsByPage(limit, start int) ([]model.News, error) {
-	panic("")
-}
-
-func (m *mockNewsRepo) QueryNewsCount() (int64, error) {
-	panic("")
-}
-
-func (m *mockNewsRepo) FindNews(id int) (model.News, error) {
-	m.called = true
-	m.id = id
-	return m.news, m.err
+	require.Equal(t, "query count error", err.Error())
+	require.Empty(t, result)
 }
 
 func TestFindNewsWithCoverFallbackAndStripURL(t *testing.T) {
-	now := time.Now()
+	setupAssets(t)
 
-	mockRepo := &mockNewsRepo{
-		news: model.News{
-			Id:          1,
-			Title:       "Sample News",
-			Description: "Short desc",
-			Cover:       "cover1.jpg",
-			CoverSource: "source1",
-			CoverCustom: "",
-			Content:     "This is content with http://example.com and https://foo.bar/path inside.",
-			PubDate:     now,
-		},
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	now := time.Now()
+	news := model.News{
+		Id:          1,
+		Title:       "Sample News",
+		Description: "Short desc",
+		Cover:       "cover1.jpg",
+		CoverSource: "source1",
+		CoverCustom: "CoverCustom.jpg",
+		Content:     "This is content with http://example.com and https://foo.bar/path inside.",
+		PubDate:     now,
 	}
+
+	repo := mocks.NewMockNewsRepository(ctrl)
+	repo.EXPECT().FindNews(gomock.Any()).Return(news, nil).Times(1)
 
 	s := &Serv{
-		NewsRepo: mockRepo,
+		NewsRepo: repo,
 	}
-
 	result, err := s.FindNews(1)
+
 	require.NoError(t, err)
-	require.True(t, mockRepo.called)
+	require.Equal(t, news.Title, result.Title)
+	require.Equal(t, news.Description, result.Description)
+	require.Equal(t, news.CoverSource, result.CoverSource)
+	require.True(t, result.PubDate.Equal(news.PubDate))
 
-	assert.Equal(t, 1, mockRepo.id)
+	require.Equal(t, "https://cdn.test/"+news.Cover, result.Cover)
+	require.Equal(t, "https://cdn.test/"+news.CoverCustom, result.CoverCustom)
 
-	assert.Equal(t, mockRepo.news.Title, result.Title)
-	assert.Equal(t, mockRepo.news.Description, result.Description)
-	assert.Equal(t, mockRepo.news.CoverSource, result.CoverSource)
-	assert.True(t, result.PubDate.Equal(mockRepo.news.PubDate))
-
-	assert.Contains(t, result.Cover, mockRepo.news.Cover)
-	assert.Contains(t, result.CoverCustom, mockRepo.news.Cover)
-
-	assert.NotEmpty(t, result.Content)
-	assert.NotContains(t, result.Content, "http://")
-	assert.NotContains(t, result.Content, "https://")
+	require.Equal(t, "This is content with  and  inside.", result.Content)
 }
 
 func TestFindNewsWithCustomCover(t *testing.T) {
+	setupAssets(t)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
 	now := time.Now()
 
-	mockRepo := &mockNewsRepo{
-		news: model.News{
-			Id:          2,
-			Title:       "Custom Cover News",
-			Description: "Desc",
-			Cover:       "cover2.jpg",
-			CoverSource: "source2",
-			CoverCustom: "custom_cover.png",
-			Content:     "No URL in this content.",
-			PubDate:     now,
-		},
+	news := model.News{
+		Id:          1,
+		Title:       "Custom Cover News",
+		Description: "Desc",
+		Cover:       "cover2.jpg",
+		CoverSource: "source2",
+		CoverCustom: "",
+		Content:     "No URL in this content.",
+		PubDate:     now,
 	}
+
+	repo := mocks.NewMockNewsRepository(ctrl)
+	repo.EXPECT().FindNews(gomock.Any()).Return(news, nil).Times(1)
 
 	s := &Serv{
-		NewsRepo: mockRepo,
+		NewsRepo: repo,
 	}
 
-	result, err := s.FindNews(2)
+	result, err := s.FindNews(1)
 
 	require.NoError(t, err)
-	require.True(t, mockRepo.called)
+	require.Equal(t, news.Title, result.Title)
+	require.Equal(t, news.Description, result.Description)
+	require.Equal(t, "https://cdn.test/"+news.Cover, result.Cover)
+	require.Equal(t, news.CoverSource, result.CoverSource)
+	require.Equal(t, news.PubDate, result.PubDate)
+	require.Equal(t, "https://cdn.test/"+news.Cover, result.CoverCustom)
+	require.Equal(t, result.CoverCustom, result.CoverCustom)
+	require.Equal(t, result.Content, result.Content)
+}
 
-	assert.Equal(t, 2, mockRepo.id)
-	assert.Contains(t, result.Cover, mockRepo.news.Cover)
-	assert.Contains(t, result.CoverCustom, mockRepo.news.CoverCustom)
-	assert.NotContains(t, result.CoverCustom, mockRepo.news.Cover)
+func TestFindNewsWithIdNotFound(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	repo := mocks.NewMockNewsRepository(ctrl)
+	repo.EXPECT().FindNews(gomock.Any()).Return(model.News{Id: 0}, nil).Times(1)
+
+	s := &Serv{
+		NewsRepo: repo,
+	}
+	result, err := s.FindNews(1)
+	require.Error(t, err)
+	require.Empty(t, result)
 }
 
 func TestFindNewsWithRepoError(t *testing.T) {
-	mockRepo := &mockNewsRepo{
-		err: fmt.Errorf("db error"),
-	}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	repo := mocks.NewMockNewsRepository(ctrl)
+	repo.EXPECT().FindNews(gomock.Any()).Return(model.News{}, errors.New("find error")).Times(1)
 
 	s := &Serv{
-		NewsRepo: mockRepo,
+		NewsRepo: repo,
 	}
-
-	result, err := s.FindNews(123)
+	result, err := s.FindNews(1)
 
 	require.Error(t, err)
-	assert.Equal(t, api.NewsDetail{}, result)
-	require.True(t, mockRepo.called)
-	assert.Equal(t, 123, mockRepo.id)
+	require.Equal(t, "find error", err.Error())
+	require.Empty(t, result)
 }

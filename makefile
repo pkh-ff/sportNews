@@ -62,4 +62,5 @@ cover:
 	@mkdir -p ./docs/cover
 	@PKGS=$$(go list ./... | grep -v '/mocks' | grep -v '/logs' | tr '\n' ','); \
 	go test ./... -coverpkg="$${PKGS%,}" -coverprofile=./docs/cover/coverage.out; \
-	go tool cover -html=./docs/cover/coverage.out -o ./docs/cover/coverage.html
+	go tool cover -html=./docs/cover/coverage.out -o ./docs/cover/coverage.html; \
+	go tool cover -func=./docs/cover/coverage.out

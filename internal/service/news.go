@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"regexp"
 	"sportNews/internal/assets"
 	"sportNews/internal/model/api"
@@ -70,6 +71,12 @@ func (s *Serv) FindNews(id int) (api.NewsDetail, error) {
 		log.Error("FindNews: Failed to fetch news details from database", zap.Int("id", id), zap.Error(err))
 		return api.NewsDetail{}, err
 	}
+
+	if data.Id == 0 {
+		log.Warn("FindNews: News not found", zap.Int("id", id))
+		return api.NewsDetail{}, errors.New("news not found")
+	}
+
 	log.Info("FindNews: News details fetched successfully", zap.Int("id", id))
 
 	re := regexp.MustCompile(`https?://[^\s]+`) // 匹配任何以 api:// 或 https:// 開頭，後面接著不是空白字元（[^\s]）的一串文字

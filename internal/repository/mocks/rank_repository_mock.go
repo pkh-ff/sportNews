@@ -41,6 +41,66 @@ func (m *MockRankRepository) EXPECT() *MockRankRepositoryMockRecorder {
 	return m.recorder
 }
 
+// CheckRankDataExist mocks base method.
+func (m *MockRankRepository) CheckRankDataExist(date string, t enum.RankType) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CheckRankDataExist", date, t)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CheckRankDataExist indicates an expected call of CheckRankDataExist.
+func (mr *MockRankRepositoryMockRecorder) CheckRankDataExist(date, t any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckRankDataExist", reflect.TypeOf((*MockRankRepository)(nil).CheckRankDataExist), date, t)
+}
+
+// DeleteRankData mocks base method.
+func (m_2 *MockRankRepository) DeleteRankData(m model.SportRank) (bool, error) {
+	m_2.ctrl.T.Helper()
+	ret := m_2.ctrl.Call(m_2, "DeleteRankData", m)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeleteRankData indicates an expected call of DeleteRankData.
+func (mr *MockRankRepositoryMockRecorder) DeleteRankData(m any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteRankData", reflect.TypeOf((*MockRankRepository)(nil).DeleteRankData), m)
+}
+
+// GetOldestRankDataByType mocks base method.
+func (m *MockRankRepository) GetOldestRankDataByType(t enum.RankType) (model.SportRank, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetOldestRankDataByType", t)
+	ret0, _ := ret[0].(model.SportRank)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetOldestRankDataByType indicates an expected call of GetOldestRankDataByType.
+func (mr *MockRankRepositoryMockRecorder) GetOldestRankDataByType(t any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOldestRankDataByType", reflect.TypeOf((*MockRankRepository)(nil).GetOldestRankDataByType), t)
+}
+
+// GetRankDataCountByType mocks base method.
+func (m *MockRankRepository) GetRankDataCountByType(t enum.RankType) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRankDataCountByType", t)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetRankDataCountByType indicates an expected call of GetRankDataCountByType.
+func (mr *MockRankRepositoryMockRecorder) GetRankDataCountByType(t any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRankDataCountByType", reflect.TypeOf((*MockRankRepository)(nil).GetRankDataCountByType), t)
+}
+
 // GetRankDate mocks base method.
 func (m *MockRankRepository) GetRankDate(t enum.RankType) (model.SportRank, error) {
 	m.ctrl.T.Helper()
@@ -54,4 +114,18 @@ func (m *MockRankRepository) GetRankDate(t enum.RankType) (model.SportRank, erro
 func (mr *MockRankRepositoryMockRecorder) GetRankDate(t any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRankDate", reflect.TypeOf((*MockRankRepository)(nil).GetRankDate), t)
+}
+
+// InsertRank mocks base method.
+func (m_2 *MockRankRepository) InsertRank(m model.SportRank) error {
+	m_2.ctrl.T.Helper()
+	ret := m_2.ctrl.Call(m_2, "InsertRank", m)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// InsertRank indicates an expected call of InsertRank.
+func (mr *MockRankRepositoryMockRecorder) InsertRank(m any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertRank", reflect.TypeOf((*MockRankRepository)(nil).InsertRank), m)
 }

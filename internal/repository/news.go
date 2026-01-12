@@ -15,6 +15,11 @@ type NewsRepository interface {
 	QueryNewsByPage(limit, start int) ([]model.News, error)
 	QueryNewsCount() (int64, error)
 	FindNews(id int) (model.News, error)
+	GetLastUpdateCoverCustomNews() (model.News, error)
+	GetNoCoverCustomNews() ([]model.News, error)
+	InsertNews(m model.News) error
+	UpdateNews(m model.News) error
+	GetCountByTitle(title, source string) (int64, error)
 }
 
 // GetNoCoverNews

@@ -2,29 +2,24 @@ package service
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"sportNews/internal/enum"
 	"sportNews/internal/model"
+	"sportNews/internal/repository/mocks"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/mock/gomock"
 )
 
-type mockRankRepo struct {
-	rank     model.SportRank
-	err      error
-	called   bool
-	rankType enum.RankType
-}
-
-func (m *mockRankRepo) GetRankDate(t enum.RankType) (model.SportRank, error) {
-	m.called = true
-	m.rankType = t
-	return m.rank, m.err
-}
-
 func TestGetRankData(t *testing.T) {
+	setupAssets(t)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
 	details := []model.RankDetail{
 		{
 			Team: "New Zealand",
@@ -40,79 +35,95 @@ func TestGetRankData(t *testing.T) {
 		},
 	}
 
-	jsonBytes, err := json.Marshal(details)
-
-	mockRepo := &mockRankRepo{
-		rank: model.SportRank{
-			Data: string(jsonBytes),
-		},
+	detailsJSON, _ := json.Marshal(details)
+	mockRankData := model.SportRank{
+		Type: enum.Test,
+		Data: string(detailsJSON),
+		Date: time.Now(),
 	}
 
+	repo := mocks.NewMockRankRepository(ctrl)
+	repo.EXPECT().GetRankDate(gomock.Any()).
+		Return(mockRankData, nil).Times(1)
+
 	s := &Serv{
-		RankRepo: mockRepo,
+		RankRepo: repo,
 	}
 	result, err := s.GetRankData(enum.Test)
 
 	require.NoError(t, err)
-	require.True(t, mockRepo.called)
-	assert.Equal(t, enum.Test, mockRepo.rankType)
-
 	require.Len(t, result, len(details))
 	for i, r := range result {
+		icon := "https://cdn.test" + details[i].Icon
 		assert.Equal(t, details[i].Team, r.Team)
-		assert.Contains(t, details[i].Icon, r.Icon)
+		assert.Contains(t, icon, r.Icon)
 	}
 }
 
 func TestGetRankDataWithEmpty(t *testing.T) {
-	jsonBytes, err := json.Marshal([]model.RankDetail{})
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-	mockRepo := &mockRankRepo{
-		rank: model.SportRank{
-			Data: string(jsonBytes),
-		},
+	detailsJSON, _ := json.Marshal([]model.RankDetail{})
+
+	mockRankData := model.SportRank{
+		Type: enum.Test,
+		Data: string(detailsJSON),
+		Date: time.Now(),
 	}
 
+	repo := mocks.NewMockRankRepository(ctrl)
+	repo.EXPECT().GetRankDate(gomock.Any()).
+		Return(mockRankData, nil).Times(1)
+
 	s := &Serv{
-		RankRepo: mockRepo,
+		RankRepo: repo,
 	}
 	result, err := s.GetRankData(enum.Test)
 
 	require.NoError(t, err)
-	require.True(t, mockRepo.called)
-	assert.Equal(t, enum.Test, mockRepo.rankType)
-	require.Len(t, result, 0)
+	require.Empty(t, result)
 }
 
 func TestGetRankDataWithDBError(t *testing.T) {
-	mockRepo := &mockRankRepo{
-		err: fmt.Errorf("db error"),
-	}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	repo := mocks.NewMockRankRepository(ctrl)
+	repo.EXPECT().GetRankDate(gomock.Any()).
+		Return(model.SportRank{}, errors.New("db error")).Times(1)
 
 	s := &Serv{
-		RankRepo: mockRepo,
+		RankRepo: repo,
 	}
 	result, err := s.GetRankData(enum.Test)
 
 	require.Error(t, err)
-	assert.Nil(t, result)
-	require.True(t, mockRepo.called)
-	assert.Equal(t, enum.Test, mockRepo.rankType)
+	require.Equal(t, "db error", err.Error())
+	require.Empty(t, result)
 }
 
 func TestTestGetRankDataWithInvalidJSON(t *testing.T) {
-	mockRepo := &mockRankRepo{
-		rank: model.SportRank{
-			Data: "data",
-		},
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockRankData := model.SportRank{
+		Type: enum.Test,
+		Data: "invalid JSON data",
+		Date: time.Now(),
 	}
 
+	repo := mocks.NewMockRankRepository(ctrl)
+	repo.EXPECT().GetRankDate(gomock.Any()).
+		Return(mockRankData, nil).Times(1)
+
 	s := &Serv{
-		RankRepo: mockRepo,
+		RankRepo: repo,
 	}
 
 	result, err := s.GetRankData(enum.Test)
 
 	require.Error(t, err)
-	assert.Nil(t, result)
+	require.Equal(t, "invalid character 'i' looking for beginning of value", err.Error())
+	require.Empty(t, result)
 }

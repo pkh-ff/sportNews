@@ -55,6 +55,65 @@ func (mr *MockNewsRepositoryMockRecorder) FindNews(id any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindNews", reflect.TypeOf((*MockNewsRepository)(nil).FindNews), id)
 }
 
+// GetCountByTitle mocks base method.
+func (m *MockNewsRepository) GetCountByTitle(title, source string) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCountByTitle", title, source)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCountByTitle indicates an expected call of GetCountByTitle.
+func (mr *MockNewsRepositoryMockRecorder) GetCountByTitle(title, source any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCountByTitle", reflect.TypeOf((*MockNewsRepository)(nil).GetCountByTitle), title, source)
+}
+
+// GetLastUpdateCoverCustomNews mocks base method.
+func (m *MockNewsRepository) GetLastUpdateCoverCustomNews() (model.News, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetLastUpdateCoverCustomNews")
+	ret0, _ := ret[0].(model.News)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetLastUpdateCoverCustomNews indicates an expected call of GetLastUpdateCoverCustomNews.
+func (mr *MockNewsRepositoryMockRecorder) GetLastUpdateCoverCustomNews() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLastUpdateCoverCustomNews", reflect.TypeOf((*MockNewsRepository)(nil).GetLastUpdateCoverCustomNews))
+}
+
+// GetNoCoverCustomNews mocks base method.
+func (m *MockNewsRepository) GetNoCoverCustomNews() ([]model.News, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNoCoverCustomNews")
+	ret0, _ := ret[0].([]model.News)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNoCoverCustomNews indicates an expected call of GetNoCoverCustomNews.
+func (mr *MockNewsRepositoryMockRecorder) GetNoCoverCustomNews() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNoCoverCustomNews", reflect.TypeOf((*MockNewsRepository)(nil).GetNoCoverCustomNews))
+}
+
+// InsertNews mocks base method.
+func (m_2 *MockNewsRepository) InsertNews(m model.News) error {
+	m_2.ctrl.T.Helper()
+	ret := m_2.ctrl.Call(m_2, "InsertNews", m)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// InsertNews indicates an expected call of InsertNews.
+func (mr *MockNewsRepositoryMockRecorder) InsertNews(m any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertNews", reflect.TypeOf((*MockNewsRepository)(nil).InsertNews), m)
+}
+
 // QueryNewsByPage mocks base method.
 func (m *MockNewsRepository) QueryNewsByPage(limit, start int) ([]model.News, error) {
 	m.ctrl.T.Helper()
@@ -83,4 +142,18 @@ func (m *MockNewsRepository) QueryNewsCount() (int64, error) {
 func (mr *MockNewsRepositoryMockRecorder) QueryNewsCount() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "QueryNewsCount", reflect.TypeOf((*MockNewsRepository)(nil).QueryNewsCount))
+}
+
+// UpdateNews mocks base method.
+func (m_2 *MockNewsRepository) UpdateNews(m model.News) error {
+	m_2.ctrl.T.Helper()
+	ret := m_2.ctrl.Call(m_2, "UpdateNews", m)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateNews indicates an expected call of UpdateNews.
+func (mr *MockNewsRepositoryMockRecorder) UpdateNews(m any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateNews", reflect.TypeOf((*MockNewsRepository)(nil).UpdateNews), m)
 }

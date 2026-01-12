@@ -1,26 +1,22 @@
 package service
 
 import (
-	"fmt"
+	"errors"
 	"sportNews/internal/model"
+	"sportNews/internal/repository/mocks"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/mock/gomock"
 )
 
-type mockVideoRepo struct {
-	videos []model.Video
-	limit  int
-	err    error
-}
-
-func (m *mockVideoRepo) VideoList(limit int) ([]model.Video, error) {
-	m.limit = limit
-	return m.videos, m.err
-}
-
 func TestGetVideoList(t *testing.T) {
+	setupAssets(t)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
 	videos := []model.Video{
 		{
 			Title:       "title1",
@@ -36,19 +32,18 @@ func TestGetVideoList(t *testing.T) {
 		},
 	}
 
-	mockRepo := &mockVideoRepo{
-		videos: videos,
-	}
+	repo := mocks.NewMockVideoRepository(ctrl)
+	repo.EXPECT().VideoList(10).Return(videos, nil).Times(1)
 
 	s := &Serv{
-		VideoRepo: mockRepo,
+		VideoRepo: repo,
 	}
 
 	result, err := s.GetVideoList()
 
 	require.NoError(t, err)
 	require.Len(t, result, len(videos))
-	assert.Equal(t, 10, mockRepo.limit)
+	assert.Equal(t, len(result), len(videos))
 	assert.Nil(t, err)
 	for i, v := range videos {
 		assert.Equal(t, v.Title, result[i].Title)
@@ -59,12 +54,14 @@ func TestGetVideoList(t *testing.T) {
 }
 
 func TestGetVideoListWithEmpty(t *testing.T) {
-	mockRepo := &mockVideoRepo{
-		videos: []model.Video{},
-	}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	repo := mocks.NewMockVideoRepository(ctrl)
+	repo.EXPECT().VideoList(10).Return([]model.Video{}, nil).Times(1)
 
 	s := &Serv{
-		VideoRepo: mockRepo,
+		VideoRepo: repo,
 	}
 
 	result, err := s.GetVideoList()
@@ -72,21 +69,23 @@ func TestGetVideoListWithEmpty(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, result, 0)
 	assert.Nil(t, err)
-	assert.Equal(t, 10, mockRepo.limit)
+	assert.Empty(t, result)
 }
 
 func TestGetVideoListWithDBError(t *testing.T) {
-	mockRepo := &mockVideoRepo{
-		err: fmt.Errorf("db error"),
-	}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	repo := mocks.NewMockVideoRepository(ctrl)
+	repo.EXPECT().VideoList(10).Return([]model.Video{}, errors.New("db error")).Times(1)
 
 	s := &Serv{
-		VideoRepo: mockRepo,
+		VideoRepo: repo,
 	}
 
 	result, err := s.GetVideoList()
 
 	require.Error(t, err)
-	assert.Equal(t, 10, mockRepo.limit)
+	assert.Equal(t, "db error", err.Error())
 	assert.Nil(t, result)
 }
