@@ -9,10 +9,10 @@ import (
 	"go.uber.org/zap"
 )
 
-// BuildHttpRequest
+// buildHttpRequest
 // 建立HttpRequest實例
-func BuildHttpRequest(baseURL, method string, queryParams, hdrs map[string]string) (*http.Request, error) {
-	log.Info("BuildHttpRequest: Constructing HTTP request",
+func buildHttpRequest(baseURL, method string, queryParams, hdrs map[string]string) (*http.Request, error) {
+	log.Info("buildHttpRequest: Constructing HTTP request",
 		zap.String("baseURL", baseURL),
 		zap.String("method", method),
 		zap.Any("queryParams", queryParams),
@@ -20,7 +20,7 @@ func BuildHttpRequest(baseURL, method string, queryParams, hdrs map[string]strin
 	)
 	u, err := url.Parse(baseURL)
 	if err != nil {
-		log.Error("BuildHttpRequest: Failed to create HTTP request", zap.String("method", method), zap.String("url", u.String()), zap.Error(err))
+		log.Error("buildHttpRequest: Failed to create HTTP request", zap.String("method", method), zap.String("url", u.String()), zap.Error(err))
 		return nil, err
 	}
 
@@ -42,7 +42,7 @@ func BuildHttpRequest(baseURL, method string, queryParams, hdrs map[string]strin
 		req.Header.Set(k, v)
 	}
 
-	log.Info("BuildHttpRequest: HTTP request constructed successfully", zap.String("url", req.URL.String()), zap.String("method", method))
+	log.Info("buildHttpRequest: HTTP request constructed successfully", zap.String("url", req.URL.String()), zap.String("method", method))
 
 	return req, nil
 }
@@ -57,7 +57,7 @@ func SendHTTPRequest(url, method string, headers, queryParams map[string]string)
 		zap.Any("queryParams", queryParams),
 	)
 
-	req, err := BuildHttpRequest(url, method, queryParams, headers)
+	req, err := buildHttpRequest(url, method, queryParams, headers)
 	if err != nil {
 		log.Error("SendHTTPRequest: Failed to build HTTP request", zap.Error(err))
 		return nil, err
