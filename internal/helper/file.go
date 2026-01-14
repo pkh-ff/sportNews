@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -48,6 +49,10 @@ func WriteToFile(filename, content string) error {
 // GetFileNameFromURL
 // 取得檔名(含副檔名)
 func GetFileNameFromURL(urlStr string) (string, error) {
+	if urlStr == "" {
+		return "", errors.New("path no allow empty")
+	}
+
 	// 解析 URL，去除查詢字符串
 	parsedURL, err := url.Parse(urlStr)
 	if err != nil {
@@ -55,8 +60,16 @@ func GetFileNameFromURL(urlStr string) (string, error) {
 		return "", err
 	}
 
+	if parsedURL.Path == "" || parsedURL.Path == "/" || parsedURL.Path == "." {
+		return "", errors.New("invalid url")
+	}
+
 	// 去除查詢字符串
 	fileName := path.Base(parsedURL.Path)
+
+	if fileName == "/" || fileName == "." {
+		return "", errors.New("invalid url")
+	}
 
 	return fileName, nil
 }
