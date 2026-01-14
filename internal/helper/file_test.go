@@ -3,11 +3,36 @@ package helper
 import (
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func TestWriteToFile(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	filename := path.Join(tmpDir, "test.txt")
+	content := "Hello, SportNews!"
+
+	err := WriteToFile(filename, content)
+	require.NoError(t, err)
+
+	readContent, err := os.ReadFile(filename)
+	require.NoError(t, err)
+	assert.Equal(t, content, string(readContent))
+}
+
+func TestWriteToFileWithInvalidWritePath(t *testing.T) {
+	filename := "/path/to/nowhere/test.txt"
+
+	err := WriteToFile(filename, "content")
+
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to create file")
+}
 
 func TestGetFileNameFromURL(t *testing.T) {
 	url := "http://example.com/test.png"
