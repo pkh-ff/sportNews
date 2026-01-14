@@ -85,6 +85,10 @@ func DownloadFileFromUrl(url string) ([]byte, error) {
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("download failed with status: %d", resp.StatusCode)
+	}
+
 	// 讀取檔案數據
 	imgData, err := io.ReadAll(resp.Body)
 	if err != nil {
