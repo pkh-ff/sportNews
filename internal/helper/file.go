@@ -8,7 +8,6 @@ import (
 	"os"
 	"path"
 	"sportNews/pkg/log"
-	"strings"
 
 	"go.uber.org/zap"
 )
@@ -58,11 +57,6 @@ func GetFileNameFromURL(urlStr string) (string, error) {
 
 	// 去除查詢字符串
 	fileName := path.Base(parsedURL.Path)
-
-	// 去掉副檔名後的查詢參數
-	if idx := strings.Index(fileName, "?"); idx != -1 {
-		fileName = fileName[:idx]
-	}
 
 	return fileName, nil
 }
