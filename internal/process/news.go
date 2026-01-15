@@ -3,11 +3,11 @@ package process
 import (
 	"context"
 	"sportNews/conf"
+	"sportNews/conf/aws"
 	"sportNews/internal/service/crawler"
 	"sportNews/pkg/log"
 	"time"
 
-	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"go.uber.org/zap"
 	"xorm.io/xorm"
 )
@@ -37,8 +37,8 @@ func NDTVProcess(ctx context.Context, conf conf.App, db *xorm.EngineGroup) {
 
 }
 
-func BCCIProcess(ctx context.Context, conf conf.Conf, s3Client *s3.Client, db *xorm.EngineGroup) {
-	serv := crawler.NewBCCIServ(db, s3Client, conf.Aws.Bucket, conf.Aws.Acl)
+func BCCIProcess(ctx context.Context, conf conf.Conf, awsClient *aws.S3Client, db *xorm.EngineGroup) {
+	serv := crawler.NewBCCIServ(db, awsClient)
 
 	interval := time.Duration(conf.App.Process.Ranking) * time.Second
 	ticker := time.NewTicker(interval)
@@ -57,8 +57,8 @@ func BCCIProcess(ctx context.Context, conf conf.Conf, s3Client *s3.Client, db *x
 	}
 }
 
-func PictureSyncProcess(ctx context.Context, conf conf.Conf, s3Client *s3.Client, db *xorm.EngineGroup) {
-	serv := crawler.NewStoryFile(db, s3Client, conf.Aws.Bucket, conf.Aws.Acl)
+func PictureSyncProcess(ctx context.Context, conf conf.Conf, s3Client *aws.S3Client, db *xorm.EngineGroup) {
+	serv := crawler.NewStoryFile(db, s3Client)
 
 	interval := time.Duration(conf.App.Process.SyncPicture) * time.Second
 	ticker := time.NewTicker(interval)

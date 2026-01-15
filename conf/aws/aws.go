@@ -11,12 +11,27 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
-func New(conf conf.Aws) (*s3.Client, error) {
+type S3Api interface {
+	PutObject(ctx context.Context, params *s3.PutObjectInput, optFns ...func(*s3.Options)) (*s3.PutObjectOutput, error)
+}
+
+type S3Client struct {
+	Client S3Api
+	Bucket string
+	Acl    bool
+}
+
+func New(conf conf.Aws) (*S3Client, error) {
 	cfg, err := setConfig(conf)
 	if err != nil {
 		return nil, err
 	}
-	return s3.NewFromConfig(cfg), nil
+
+	return &S3Client{
+		Client: s3.NewFromConfig(cfg),
+		Bucket: conf.Bucket,
+		Acl:    conf.Acl,
+	}, nil
 }
 
 func setConfig(conf conf.Aws) (aws.Config, error) {

@@ -3,6 +3,7 @@ package crawler
 import (
 	"fmt"
 	"net/http"
+	"sportNews/conf/aws"
 	"sportNews/internal/assets"
 	"sportNews/internal/enum"
 	"sportNews/internal/helper"
@@ -12,7 +13,6 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"go.uber.org/zap"
 	"xorm.io/xorm"
 )
@@ -21,18 +21,14 @@ type BCCIServ struct {
 	Serv     *Serv
 	Source   string
 	Domain   string
-	S3Client *s3.Client
-	Bucket   string
-	Acl      bool
+	S3Client *aws.S3Client
 }
 
-func NewBCCIServ(db *xorm.EngineGroup, s3Client *s3.Client, bucket string, acl bool) *BCCIServ {
+func NewBCCIServ(db *xorm.EngineGroup, s3Client *aws.S3Client) *BCCIServ {
 	return &BCCIServ{
 		Serv:     newServ(db, "bcci"),
 		Domain:   "https://sports.ndtv.com",
 		S3Client: s3Client,
-		Bucket:   bucket,
-		Acl:      acl,
 	}
 }
 
@@ -114,7 +110,7 @@ func (s *BCCIServ) replaceTeamIcon(data *[]model.RankDetail) {
 			continue
 		}
 
-		err = helper.UploadToS3(s.S3Client, imgData, s.Bucket, objectKey, http.DetectContentType(imgData), s.Acl)
+		err = helper.UploadToS3(s.S3Client, imgData, objectKey, http.DetectContentType(imgData))
 		if err != nil {
 			log.Error("StoryNewsCover, upload fil to s3 fail", zap.String("url", (*data)[i].Icon), zap.Error(err))
 			continue

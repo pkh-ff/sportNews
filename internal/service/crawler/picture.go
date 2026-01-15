@@ -3,32 +3,28 @@ package crawler
 import (
 	"net/http"
 	"regexp"
+	"sportNews/conf/aws"
 	"sportNews/internal/assets"
 	"sportNews/internal/helper"
 	"sportNews/internal/repository"
 	"sportNews/pkg/log"
 	"strconv"
 
-	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"go.uber.org/zap"
 	"xorm.io/xorm"
 )
 
 type StoryFile struct {
 	Repo     *repository.Repository
-	S3Client *s3.Client
-	Bucket   string
-	Acl      bool
+	S3Client *aws.S3Client
 }
 
-func NewStoryFile(db *xorm.EngineGroup, s3Client *s3.Client, bucket string, acl bool) *StoryFile {
+func NewStoryFile(db *xorm.EngineGroup, awsClient *aws.S3Client) *StoryFile {
 	repo := repository.New(db)
 
 	return &StoryFile{
 		Repo:     repo,
-		S3Client: s3Client,
-		Bucket:   bucket,
-		Acl:      acl,
+		S3Client: awsClient,
 	}
 }
 
@@ -66,7 +62,7 @@ func (s *StoryFile) SyncSourceNewsCover() {
 		contentType := http.DetectContentType(imgData)
 		objectKey := helper.NewsCoverPrefix + filename
 
-		err = helper.UploadToS3(s.S3Client, imgData, s.Bucket, objectKey, contentType, s.Acl)
+		err = helper.UploadToS3(s.S3Client, imgData, objectKey, contentType)
 		if err != nil {
 			log.Error("SyncSourceNewsCover, upload fil to s3 fail", zap.String("url", v.CoverSource), zap.Error(err))
 			continue

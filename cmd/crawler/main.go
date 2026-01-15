@@ -16,7 +16,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/aws/aws-sdk-go-v2/service/s3"
 	_ "github.com/go-sql-driver/mysql"
 	"go.uber.org/zap"
 	"xorm.io/xorm"
@@ -62,7 +61,7 @@ func main() {
 	shutdown(cancel, config, db)
 }
 
-func crawlerProcess(ctx context.Context, conf conf.Conf, db *xorm.EngineGroup, s3Client *s3.Client) {
+func crawlerProcess(ctx context.Context, conf conf.Conf, db *xorm.EngineGroup, s3Client *aws.S3Client) {
 	// NDTV
 	wg.Add(1)
 	go func() {

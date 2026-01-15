@@ -3,6 +3,7 @@ package helper
 import (
 	"bytes"
 	"context"
+	confAws "sportNews/conf/aws"
 	"sportNews/pkg/log"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -21,19 +22,19 @@ const (
 
 // UploadToS3
 // 上傳圖片到AWS s3
-func UploadToS3(s3Client *s3.Client, imgData []byte, bucketName, objectKey, contentType string, setAcl bool) error {
+func UploadToS3(s3Client *confAws.S3Client, imgData []byte, objectKey, contentType string) error {
 	pi := s3.PutObjectInput{
-		Bucket:      &bucketName,
+		Bucket:      &s3Client.Bucket,
 		Key:         &objectKey,
 		Body:        bytes.NewReader(imgData),
 		ContentType: aws.String(contentType), // 根據圖片類型調整
 	}
 
-	if setAcl {
+	if s3Client.Acl {
 		pi.ACL = types.ObjectCannedACLPublicRead
 	}
 
-	_, err := s3Client.PutObject(context.TODO(), &pi)
+	_, err := s3Client.Client.PutObject(context.TODO(), &pi)
 	if err != nil {
 		log.Error("UploadToS3: Upload file to s3 fail", zap.Error(err))
 		return err
